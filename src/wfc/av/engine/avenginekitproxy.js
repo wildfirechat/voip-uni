@@ -285,10 +285,11 @@ export class AvEngineKitProxy {
                     event,
                     args
                 };
-            // setTimeout(() => {
+            // 这儿的延时目前是必须的，要等音视频页面加载完成，并监听相关事件
+            setTimeout(() => {
                 console.log('emitToVoip', _data);
                 this.voipWebview.evalJS(`${_funName}(${JSON.stringify(_data)})`);
-            // }, 2000)
+            }, 2000)
         } else if (this.queueEvents) {
             this.queueEvents.push({event, args});
         }
@@ -305,18 +306,18 @@ export class AvEngineKitProxy {
     }
 
     // called by uniapp
-    webviewEventListener = data => {
-        console.log('webviewEventListener', data)
-        let {evt, args} = data;
-        switch (evt){
+    webviewEventListener = evt => {
+        let {event, args} = evt.detail.data[0];
+        console.log('webviewEventListener', evt)
+        switch (event) {
             case 'voip-message':
-                this.setVoipWebview(evt, args);
+                this.sendVoipListener(event, args);
                 break;
             case 'conference-request':
-                this.sendConferenceRequestListener(evt, args);
+                this.sendConferenceRequestListener(event, args);
                 break;
             case 'update-call-start-message':
-                this.updateCallStartMessageContentListener(evt, args);
+                this.updateCallStartMessageContentListener(event, args);
                 break;
             default:
                 break;
@@ -324,11 +325,11 @@ export class AvEngineKitProxy {
     }
 
     // called by webview
-    listenVoipEvent = (event, listener) => {
-        console.log('listenVoipEvent', event);
+    listenVoipEvent = (evt, listener) => {
+        console.log('listenVoipEvent', evt);
         if (!window.msgFromUniapp) {
             this.voipEventListeners = [];
-            this.voipEventListeners[event] = listener;
+            this.voipEventListeners[evt] = listener;
             window.msgFromUniapp = data => {
                 console.log('msgFromUniapp', data);
                 let {event, args} = data;
@@ -336,7 +337,7 @@ export class AvEngineKitProxy {
                 l && l(event, args);
             }
         } else {
-            this.voipEventListeners[event] = listener;
+            this.voipEventListeners[evt] = listener;
         }
     };
 

@@ -7,7 +7,7 @@
 <!--}-->
 <template>
     <div class="flex-column flex-align-center flex-justify-center">
-        <h1>Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
+        <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <div v-if="session" class="container">
             <section class="full-height full-width">
@@ -182,6 +182,7 @@ export default {
             };
 
             sessionCallback.onInitial = (session, selfUserInfo, initiatorUserInfo, participantUserInfos) => {
+                console.log('onInitial', session, selfUserInfo, initiatorUserInfo, participantUserInfos)
                 this.session = session;
                 this.audioOnly = session.audioOnly;
                 this.participantUserInfos = [...participantUserInfos];
