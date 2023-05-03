@@ -7,7 +7,7 @@
 <!--}-->
 <template>
     <div class="flex-column flex-align-center flex-justify-center">
-        <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
+        <h1>Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <div v-if="session" class="container">
             <section class="full-height full-width">
@@ -119,6 +119,7 @@ import avenginekit from "@/wfc/av/internal/engine.min";
 import CallSessionCallback from "@/wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import VideoType from "@/wfc/av/engine/videoType";
+import VConsole from 'vconsole';
 
 export default {
     name: 'Single',
@@ -294,7 +295,9 @@ export default {
 
     mounted() {
         // 必须
+        new VConsole();
         avenginekit.setup();
+        console.log('avenginekit setup end')
         this.setupSessionCallback();
     },
 

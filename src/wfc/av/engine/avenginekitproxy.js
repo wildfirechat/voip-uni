@@ -9,7 +9,7 @@ import wfc from "../../client/wfc";
 import MessageConfig from "../../client/messageConfig";
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
-import Conversation from "../../model/conversation";
+import Conversation from "../../../wfc/model/conversation";
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -285,7 +285,10 @@ export class AvEngineKitProxy {
                     event,
                     args
                 };
-            this.voipWebview.evalJS(`${_funName}(${JSON.stringify(_data)})`);
+            // setTimeout(() => {
+                console.log('emitToVoip', _data);
+                this.voipWebview.evalJS(`${_funName}(${JSON.stringify(_data)})`);
+            // }, 2000)
         } else if (this.queueEvents) {
             this.queueEvents.push({event, args});
         }
@@ -303,6 +306,7 @@ export class AvEngineKitProxy {
 
     // called by uniapp
     webviewEventListener = data => {
+        console.log('webviewEventListener', data)
         let {evt, args} = data;
         switch (evt){
             case 'voip-message':
@@ -321,13 +325,15 @@ export class AvEngineKitProxy {
 
     // called by webview
     listenVoipEvent = (event, listener) => {
+        console.log('listenVoipEvent', event);
         if (!window.msgFromUniapp) {
             this.voipEventListeners = [];
             this.voipEventListeners[event] = listener;
             window.msgFromUniapp = data => {
-                let {evt, args} = data;
-                let l = this.voipEventListeners[evt]
-                l && l(evt, args);
+                console.log('msgFromUniapp', data);
+                let {event, args} = data;
+                let l = this.voipEventListeners[event]
+                l && l(event, args);
             }
         } else {
             this.voipEventListeners[event] = listener;
@@ -349,11 +355,12 @@ export class AvEngineKitProxy {
             return;
         }
         console.log(`startCall speaker、microphone、webcam检测结果分别为：${this.hasSpeaker} , ${this.hasMicrophone}, ${this.hasWebcam}，如果不全为true，请检查硬件设备是否正常，否则通话可能存在异常`)
-        if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
-            console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
-            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
-            return;
-        }
+        /* if (!this.isSupportVoip || !this.hasSpeaker || !this.hasMicrophone) {
+             console.log('not support voip', this.isSupportVoip, this.hasSpeaker, this.hasMicrophone, this.hasWebcam);
+             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-2);
+             return;
+         }
+         */
 
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
         participants = participants.filter(uid => uid !== selfUserInfo.uid);
