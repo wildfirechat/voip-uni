@@ -158,7 +158,6 @@ export class AvEngineKitProxy {
 
     // 收到消息时，timestamp已经过修正，后面使用时，不用考虑和服务器的时间差
     onReceiveMessage = (msg) => {
-        console.log('xxx remem');
         if (!Config.ENABLE_MULTI_VOIP_CALL && msg.conversation.type === ConversationType.Group) {
             console.log('not enable multi call ');
             return;
@@ -282,6 +281,7 @@ export class AvEngineKitProxy {
         }
     };
 
+    // emit to webview
     emitToVoip(event, args) {
         if (this.voipWebview) {
             const

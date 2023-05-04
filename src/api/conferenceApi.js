@@ -1,8 +1,11 @@
-import {AppServerApi} from "./appServerApi";
+import Config from "@/config";
+import AppServerError from "./appServerError";
+import axios from "axios";
 
-class ConferenceApi extends AppServerApi {
+class ConferenceApi {
+    authToken;
+
     constructor() {
-        super();
     }
 
     /**
@@ -68,6 +71,42 @@ class ConferenceApi extends AppServerApi {
 
     setConferenceFocusUserId(conferenceId, userId) {
         return this._post('/conference/focus/' + conferenceId, {userId: userId ? userId : ''});
+    }
+
+    /**
+     *
+     * @param path
+     * @param data
+     * @param rawResponse
+     * @param rawResponseData
+     * @return {Promise<string | AxiosResponse<any>|*|T>}
+     * @private
+     */
+    async _post(path, data = {}, rawResponse = false, rawResponseData = false) {
+        let response;
+        path = Config.APP_SERVER + path;
+        response = await axios.post(path, data, {
+            transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
+            headers: {
+                'authToken': this.authToken,
+            },
+            withCredentials: true,
+        })
+        if (rawResponse) {
+            return response;
+        }
+        if (response.data) {
+            if (rawResponseData) {
+                return response.data;
+            }
+            if (response.data.code === 0) {
+                return response.data.result
+            } else {
+                throw new AppServerError(response.data.code, response.data.message)
+            }
+        } else {
+            throw new Error('request error, status code: ' + response.status)
+        }
     }
 }
 

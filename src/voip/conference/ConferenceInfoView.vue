@@ -62,9 +62,9 @@
 </template>
 
 <script>
-import wfc from "../../wfc/client/wfc";
+// import wfc from "../../wfc/client/wfc";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
-import conferenceApi from "../../../api/conferenceApi";
+import conferenceApi from "../../api/conferenceApi";
 import conferenceManager from "./conferenceManager";
 
 export default {
@@ -84,7 +84,7 @@ export default {
     },
     mounted() {
         console.log('conferenceInfo', this.conferenceInfo);
-        this.ownerName = wfc.getUserDisplayName(this.conferenceInfo.owner);
+        // this.ownerName = wfc.getUserDisplayName(this.conferenceInfo.owner);
     },
     methods: {
         favConference() {
@@ -102,7 +102,7 @@ export default {
             console.log('joinConference', info);
             let audience = !this.enableVideo && !this.enableAudio
             avenginekitproxy.joinConference(info.conferenceId, false, info.pin, info.owner, info.conferenceTitle, '', audience, info.advance, !this.enableAudio, !this.enableVideo);
-            this.$modal.hide('conference-info-modal');
+            // this.$modal.hide('conference-info-modal');
         },
     },
     computed: {
