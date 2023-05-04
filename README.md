@@ -1,5 +1,16 @@
 # voip-uni
 
+## 说明
+在`uniapp`和小程序平台，通过`webview`的方式实现音视频功能，已部分支持单人、多人音视频通话
+
+## 测试
+1. 运行本项目
+2. `uni-chat` 需要使用`dev-voip`分支
+3. 修改`VoipPage.vue`里面的`voipBaseWebUrl`
+4. 目前默认使用的是会议版音视频 SDK
+
+**WIP**
+
 ## Project setup
 ```
 npm install
