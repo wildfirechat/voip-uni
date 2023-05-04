@@ -1,4 +1,4 @@
-import conferenceApi from "../../../api/conferenceApi";
+import conferenceApi from "../../api/conferenceApi";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import MessageContentType from "../../wfc/messages/messageContentType";
 import ConferenceCommandMessageContent from "../../wfc/av/messages/conferenceCommandMessageContent";

@@ -301,7 +301,6 @@ export default {
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();
-        avenginekitproxy.emitToMain('voip-webview-ready', '')
     },
 
     computed: {

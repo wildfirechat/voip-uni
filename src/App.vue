@@ -1,8 +1,8 @@
 <template>
     <div id="app">
         <Single v-if="type === 'single'"/>
-        <Multi v-if="type === 'multi'"/>
-        <!--        <Conference v-if="type === 'conference'"/>-->
+        <Multi v-else-if="type === 'multi'"/>
+        <!--        <Conference v-else-if="type === 'conference'"/>-->
     </div>
 </template>
 
@@ -19,7 +19,7 @@ export default {
     },
     data() {
         return {
-            type: 'multi',
+            type: '',
         }
     },
     created() {

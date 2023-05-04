@@ -427,7 +427,6 @@ export default {
         new VConsole();
         avenginekit.setup();
         this.setupSessionCallback();
-        avenginekitproxy.emitToMain('voip-webview-ready', '')
     },
 
     destroyed() {
