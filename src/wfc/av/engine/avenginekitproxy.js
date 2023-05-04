@@ -503,8 +503,9 @@ export class AvEngineKitProxy {
     }
 
     showCallUI(conversation, isConference) {
+        let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         uni.navigateTo({
-            url: `/pages/voip/VoipPage`,
+            url: `/pages/voip/VoipPage?type=${type}`,
             fail: (e) => {
                 console.log(e)
             }

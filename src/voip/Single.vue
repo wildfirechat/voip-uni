@@ -28,6 +28,7 @@
                                ref="remoteVideo"
                                class="video"
                                style="height: 0"
+                               controls
                                :srcObject.prop="remoteStream"
                                playsInline autoPlay/>
                         <p>{{ participantUserInfo.displayName }}</p>
@@ -202,7 +203,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
-                this.session.closeVoipWindow();
+                uni.navigateBack();
                 this.session = null;
             }
             sessionCallback.didVideoMuted = (userId, muted) => {
@@ -231,7 +232,7 @@ export default {
             }
 
             sessionCallback.didReportAudioVolume = (userId, volume) => {
-                console.log('didReportAudioVolume', userId, volume)
+                // console.log('didReportAudioVolume', userId, volume)
             }
             avenginekit.sessionCallback = sessionCallback;
         },

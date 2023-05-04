@@ -1,18 +1,35 @@
 <template>
     <div id="app">
-        <Single/>
+        <Single v-if="type === 'single'"/>
+        <Multi v-if="type === 'multi'"/>
+        <!--        <Conference v-if="type === 'conference'"/>-->
     </div>
 </template>
 
 <script>
 
 import Single from "@/voip/Single.vue";
+import Multi from "@/voip/Multi.vue";
 
 export default {
     name: 'App',
     components: {
+        Multi,
         Single
+    },
+    data() {
+        return {
+            type: 'multi',
+        }
+    },
+    created() {
+        console.log('Voip-uni created')
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        this.type = urlParams.get('type');
+        console.log('voip type', this.type);
     }
+
 }
 </script>
 

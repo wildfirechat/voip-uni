@@ -236,7 +236,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
-                this.session.closeVoipWindow();
+                uni.navigateBack();
                 this.session = null;
             }
 
