@@ -34,6 +34,7 @@ export class AvEngineKitProxy {
 
     voipWebview;
     voipEventListeners;
+    webviewReady = false;
 
     /**
      * 无法正常弹出音视频通话窗口是的回调
@@ -65,8 +66,9 @@ export class AvEngineKitProxy {
 
     setVoipWebview(webview) {
         this.voipWebview = webview;
+        this.webviewReady = false;
 
-        if (this.queueEvents.length > 0) {
+        if (this.webviewReady && this.queueEvents.length > 0) {
             this.queueEvents.forEach((eventArgs) => {
                 console.log('process queued event', eventArgs);
                 this.emitToVoip(eventArgs.event, eventArgs.args);
@@ -295,6 +297,7 @@ export class AvEngineKitProxy {
         }
     }
 
+    // emit to uniapp
     emitToMain(event, args) {
         console.log('emit to main', event, args);
         uni.postMessage({
@@ -318,6 +321,9 @@ export class AvEngineKitProxy {
                 break;
             case 'update-call-start-message':
                 this.updateCallStartMessageContentListener(event, args);
+                break;
+            case 'voip-webview-ready':
+                this.webviewReady = true;
                 break;
             default:
                 break;

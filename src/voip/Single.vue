@@ -121,6 +121,7 @@ import CallSessionCallback from "@/wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import VideoType from "@/wfc/av/engine/videoType";
 import VConsole from 'vconsole';
+import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 
 export default {
     name: 'Single',
@@ -296,11 +297,11 @@ export default {
     },
 
     mounted() {
-        // 必须
         new VConsole();
+        // 必须
         avenginekit.setup();
-        console.log('avenginekit setup end')
         this.setupSessionCallback();
+        avenginekitproxy.emitToMain('voip-webview-ready', '')
     },
 
     computed: {

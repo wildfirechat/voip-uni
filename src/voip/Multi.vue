@@ -124,6 +124,8 @@ import ScreenOrWindowPicker from "./ScreenOrWindowPicker.vue";
 import MultiCallOngoingMessageContent from "@/wfc/av/messages/multiCallOngoingMessageContent";
 import VideoType from "@/wfc/av/engine/videoType";
 import wfc from "../wfc/client/wfc";
+import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
+import VConsole from "vconsole";
 
 export default {
     name: 'Multi',
@@ -422,8 +424,10 @@ export default {
     },
 
     mounted() {
+        new VConsole();
         avenginekit.setup();
         this.setupSessionCallback();
+        avenginekitproxy.emitToMain('voip-webview-ready', '')
     },
 
     destroyed() {
