@@ -36,12 +36,12 @@ export default class MessageContentType {
     static DeleteMessage_Notification = 81; //不存储的
     static Tip_Notification = 90;
     static Typing = 91;
-  // //以上是打招呼的内容
-  // int ContentType_Friend_Greeting = 92;
-  // //您已经添加XXX为好友了，可以愉快地聊天了
-  // int ContentType_Friend_Added = 93;
-  //
-  // int ContentType_PC_LOGIN_REQUSET = 94;
+    // //以上是打招呼的内容
+    // int ContentType_Friend_Greeting = 92;
+    // //您已经添加XXX为好友了，可以愉快地聊天了
+    // int ContentType_Friend_Added = 93;
+    //
+    // int ContentType_PC_LOGIN_REQUSET = 94;
 
     static Friend_Greeting = 92;
     static Friend_Added = 93;
@@ -86,6 +86,8 @@ export default class MessageContentType {
     static CONFERENCE_CONTENT_TYPE_INVITE = 408;
     static CONFERENCE_CONTENT_TYPE_CHANGE_MODE = 410;
     static CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER = 411;
+    static CONFERENCE_CONTENT_TYPE_COMMAND = 412;
+
     static VOIP_Multi_Call_Ongoing = 416;
     static VOIP_Join_Call_Request = 417;
 
