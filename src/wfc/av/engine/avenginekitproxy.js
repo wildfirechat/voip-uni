@@ -83,6 +83,22 @@ export class AvEngineKitProxy {
         }
     }
 
+    // called by uniapp
+    getUserInfoListener = (event, args) => {
+        let cb = (requestId, errorCode, userInfo) => {
+            this.emitToVoip('getUserInfoResult', {
+                error: errorCode,
+                requestId: requestId,
+                userInfo: userInfo
+            })
+        }
+        wfc.getUserInfoEx(args.userId, false, (userInfo) => {
+            cb(args.requestId, 0, userInfo)
+        }, err => {
+            cb(args.requestId, err, null);
+        })
+    }
+
     updateCallStartMessageContentListener = (event, message) => {
         let messageUid = message.messageUid;
         let content = message.content;
@@ -314,7 +330,7 @@ export class AvEngineKitProxy {
     // called by uniapp
     voipWebviewEventListener = evt => {
         let {event, args} = evt.detail.data[0];
-        console.log('voipWebviewEventListener', evt)
+        console.log('voipWebviewEventListener', event, evt)
         switch (event) {
             case 'voip-message':
                 this.sendVoipListener(event, args);
@@ -324,6 +340,9 @@ export class AvEngineKitProxy {
                 break;
             case 'update-call-start-message':
                 this.updateCallStartMessageContentListener(event, args);
+                break;
+            case 'getUserInfo':
+                this.getUserInfoListener(event, args)
                 break;
             default:
                 break;

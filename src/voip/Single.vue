@@ -301,6 +301,14 @@ export default {
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();
+
+        // setTimeout(() => {
+        //     this.$getUserInfo("FireRobot", (userInfo) => {
+        //         console.log('getUserInfo', userInfo)
+        //     }, err => {
+        //         console.error('getUserInfo error', err);
+        //     });
+        // }, 2000)
     },
 
     computed: {
