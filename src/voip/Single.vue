@@ -6,11 +6,10 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center">
+    <div class="voip-single-container">
         <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
-
         <div v-if="session" class="container">
-            <section class="full-height full-width">
+            <section style="width: 100%; height: 100%">
                 <!--audio-->
                 <div class="content-container" v-if="audioOnly">
                     <div class="local-media-container">
@@ -330,9 +329,19 @@ export default {
 
 <style lang="css" scoped>
 
-.container {
+.voip-single-container {
     width: 100vw;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(41, 41, 41)
+}
+
+.container {
+    width: 100%;
+    height: 100%;
     position: relative;
 }
 

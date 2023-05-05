@@ -6,7 +6,7 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center">
+    <div class="voip-multi-container">
         <h1 style="display: none">Voip-Multi 运行在新的window，和主窗口数据是隔离的！！</h1>
 
         <div v-if="session" class="container">
@@ -16,7 +16,7 @@
                     <!--self-->
                     <div class="participant-container">
                         <div v-if="audioOnly || !selfUserInfo._stream || selfUserInfo._isVideoMuted"
-                             class="flex-column flex-justify-center flex-align-center">
+                             style="display: flex; flex-direction: column; justify-content: center; align-items: center">
                             <img class="avatar" :src="selfUserInfo.portrait">
                             <video v-if="audioOnly && selfUserInfo._stream"
                                    class="hidden-video"
@@ -38,7 +38,7 @@
                     <div v-for="(participant) in participantUserInfos" :key="participant.uid"
                          class="participant-container">
                         <div v-if="audioOnly || status !== 4 || !participant._stream || participant._isVideoMuted"
-                             class="flex-column flex-justify-center flex-align-center">
+                             style="display: flex; flex-direction: column; justify-content: center; align-items: center">
                             <img class="avatar" :src="participant.portrait" :alt="participant">
                             <video v-if="audioOnly && participant._stream"
                                    class="hidden-video"
@@ -442,9 +442,19 @@ export default {
 
 <style lang="css" scoped>
 
-.container {
+.voip-multi-container {
     width: 100vw;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(41, 41, 41)
+}
+
+.container {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -452,6 +462,7 @@ export default {
 
 .content-container {
     width: 100%;
+    height: 100%;
     position: relative;
     display: flex;
     flex-wrap: wrap;
@@ -500,7 +511,6 @@ footer {
 
 .duration-action-container p {
     color: white;
-    padding: 10px 0;
 }
 
 .action-container {
@@ -509,7 +519,6 @@ footer {
     left: 0;
     display: flex;
     justify-content: space-around;
-    padding-bottom: 20px;
 }
 
 .action-container .action {
