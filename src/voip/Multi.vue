@@ -224,10 +224,11 @@ export default {
             };
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
-                let userInfo = wfc.getUserInfo(userId)
-                console.log('didParticipantJoined', userInfo)
-                userInfo._stream = null;
-                this.participantUserInfos.push(userInfo);
+                this.$getUserInfo(userId, (userInfo) => {
+                    console.log('didParticipantJoined', userInfo)
+                    userInfo._stream = null;
+                    this.participantUserInfos.push(userInfo);
+                })
             }
 
             sessionCallback.didParticipantLeft = (userId) => {
@@ -368,17 +369,16 @@ export default {
 
         invite() {
             let successCB = users => {
+                console.log('pick users', users);
                 let userIds = users.map(u => u.uid);
                 this.session.inviteNewParticipants(userIds);
             }
-            this.$pickContact({
+            this.$pickGroupMembers(
+                this.session.conversation.target,
+                [...this.session.participantUserInfos, this.session.selfUserInfo],
+                [...this.session.participantUserInfos, this.session.selfUserInfo],
                 successCB,
-                users: this.session.groupMemberUserInfos,
-                initialCheckedUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
-                uncheckableUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
-                showCategoryLabel: false,
-                confirmTitle: '确定',
-            });
+            );
         },
 
         userName(user) {
