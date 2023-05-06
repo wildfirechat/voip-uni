@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import Single from './voip/Single.vue'
 import App from "@/App.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 
