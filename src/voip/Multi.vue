@@ -239,7 +239,7 @@ export default {
 
             sessionCallback.didCallEndWithReason = (reason) => {
                 console.log('callEndWithReason', reason)
-                uni.navigateBack();
+                avenginekitproxy.emitToMain('didCallEndWithReason', reason)
                 this.session = null;
             }
 
