@@ -119,8 +119,6 @@
 import avenginekit from "@/wfc/av/internal/engine.min";
 import CallSessionCallback from "@/wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
-import {isElectron} from "../platform";
-import ScreenOrWindowPicker from "./ScreenOrWindowPicker.vue";
 import MultiCallOngoingMessageContent from "@/wfc/av/messages/multiCallOngoingMessageContent";
 import VideoType from "@/wfc/av/engine/videoType";
 import wfc from "../wfc/client/wfc";
@@ -330,40 +328,6 @@ export default {
         screenShare() {
             if (this.session.isScreenSharing()) {
                 this.session.stopScreenShare();
-            } else {
-                if (isElectron()) {
-                    let beforeClose = (event) => {
-                        // What a gamble... 50% chance to cancel closing
-                        if (!event.params) {
-                            return;
-                        }
-                        if (event.params.source) {
-                            let source = event.params.source;
-                            let desktopShareOptions = {
-                                sourceId: source.id,
-                                minWidth: 1280,
-                                maxWidth: 1280,
-                                minHeight: 720,
-                                maxHeight: 720
-                            }
-                            this.session.startScreenShare(desktopShareOptions);
-                        }
-                    };
-                    this.$modal.show(
-                        ScreenOrWindowPicker,
-                        {}, {
-                            width: 800,
-                            height: 600,
-                            name: 'screen-window-picker-modal',
-                            clickToClose: false,
-                        }, {
-                            // 'before-open': beforeOpen,
-                            'before-close': beforeClose,
-                            // 'closed': closed,
-                        })
-                } else {
-                    this.session.startScreenShare();
-                }
             }
         },
 
