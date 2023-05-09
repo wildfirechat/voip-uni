@@ -12,18 +12,6 @@
         </div>
         <ul>
             <li v-for="participant in participants" :key="participant.uid">
-                <tippy
-                    :to="'user-' + participant.uid"
-                    interactive
-                    theme="light"
-                    :animate-fill="false"
-                    placement="left"
-                    distant="7"
-                    animation="fade"
-                    trigger="manual"
-                >
-                    <UserCardView :user-info="participant"/>
-                </tippy>
                 <div class="participant-user"
                      @click.stop.prevent="showContextMenu($event, participant)"
                      :ref="'userCardTippy-'+participant.uid"
@@ -63,11 +51,11 @@
 import ConferenceInviteMessageContent from "../../wfc/av/messages/conferenceInviteMessageContent";
 import Message from "../../wfc/messages/message";
 import {isElectron} from "../../platform";
-import ForwardType from "../../main/conversation/message/forward/ForwardType";
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import UserCardView from "../../main/user/UserCardView";
+// import ForwardType from "../../main/conversation/message/forward/ForwardType";
+// import localStorageEmitter from "../../../ipc/localStorageEmitter";
+// import UserCardView from "../../main/user/UserCardView";
 import conferenceManager from "./conferenceManager";
-import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
+// import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
 
 export default {
     name: "ConferenceParticipantListView",
@@ -90,7 +78,7 @@ export default {
         }
     },
     components: {
-        UserCardView
+        // UserCardView
     },
     methods: {
         invite() {
@@ -104,7 +92,7 @@ export default {
                     messages: [message]
                 });
             } else {
-                localStorageEmitter.send(LocalStorageIpcEventType.inviteConferenceParticipant, {messagePayload: inviteMessageContent.encode()})
+                // localStorageEmitter.send(LocalStorageIpcEventType.inviteConferenceParticipant, {messagePayload: inviteMessageContent.encode()})
             }
             this.showParticipantList = false;
         },

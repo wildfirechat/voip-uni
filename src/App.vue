@@ -2,7 +2,7 @@
     <div id="app">
         <Single v-if="type === 'single'"/>
         <Multi v-else-if="type === 'multi'"/>
-        <!--        <ConferenceInfoView v-else-if="type === 'conference'"/>-->
+        <conference v-else-if="type === 'conference'"/>
     </div>
 </template>
 
@@ -11,12 +11,12 @@
 import Single from "@/voip/Single.vue";
 import Multi from "@/voip/Multi.vue";
 import conferenceApi from "@/api/conferenceApi";
-// import ConferenceInfoView from "@/voip/conference/ConferenceInfoView.vue";
+import Conference from "@/voip/conference/Conference.vue";
 
 export default {
     name: 'App',
     components: {
-        // ConferenceInfoView,
+        Conference,
         Multi,
         Single
     },

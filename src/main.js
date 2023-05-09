@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from "@/App.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
+import VueContext from "vue-context";
 
 Vue.config.productionTip = false
 
@@ -49,14 +50,10 @@ Vue.prototype.$pickGroupMembers = (groupId, initialCheckedUsers, uncheckableUser
     })
 }
 
-// this.$pickContact({
-//     successCB,
-//     users: this.session.groupMemberUserInfos,
-//     initialCheckedUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
-//     uncheckableUsers: [...this.session.participantUserInfos, this.session.selfUserInfo],
-//     showCategoryLabel: false,
-//     confirmTitle: '确定',
-// });
+Vue.prototype.$eventBus = new Vue();
+
+Vue.use(VueContext);
+Vue.component("vue-context", VueContext)
 
 new Vue({
     render: h => h(App),

@@ -24,7 +24,7 @@
 
 <script>
 import conferenceManager from "./conferenceManager";
-import store from "../../../store";
+// import store from "../../../store";
 
 export default {
     name: "ConferenceApplyUnmuteListView",

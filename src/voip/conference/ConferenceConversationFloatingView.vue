@@ -18,7 +18,7 @@
 <script>
 import Conversation from "../../wfc/model/conversation";
 import ConversationType from "../../wfc/model/conversationType";
-import store from "../../../store";
+// import store from "../../../store";
 import wfc from "../../wfc/client/wfc";
 import TextMessageContent from "../../wfc/messages/textMessageContent";
 import {gt} from "../../wfc/util/longUtil";

@@ -7,18 +7,11 @@
 <!--}-->
 <template>
     <div class="flex-column flex-align-center flex-justify-center voip-container" ref="rootContainer">
-        <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
-            <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
-                                              :title="'野火会议'"
-                                              :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
-            <ScreenShareControlView v-if="session && session.screenSharing" type="conference"/>
-            <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
-        </div>
         <div v-if="endReason !== undefined && endReason === 4" @click="rejoinConference" class="rejoin-container">
             会议断开，点击重新加入
         </div>
         <div v-if="session" class="main-slider-container"
-             v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
+             v-bind:style="{display: 'flex'}">
             <div class="main">
                 <header style="background: white; height: 20px; display: flex; justify-content: space-between">
                     <a href="#">
@@ -56,11 +49,11 @@
                         :current-layout="computedCurrentLayout"
                         :session="session"/>
                 </div>
-                <div style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000">
-                    <ConferenceConversationFloatingView
-                        :session="session"
-                    />
-                </div>
+                <!--                <div style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000">-->
+                <!--                    <ConferenceConversationFloatingView-->
+                <!--                        :session="session"-->
+                <!--                    />-->
+                <!--                </div>-->
                 <div class="conference-main-content-container">
                     <!--main-->
                     <!--video-->
@@ -224,25 +217,18 @@ import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import ClickOutside from 'vue-click-outside'
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import {currentWindow, isElectron} from "../../platform";
-import ScreenOrWindowPicker from "../ScreenOrWindowPicker.vue";
 import CallEndReason from "../../wfc/av/engine/callEndReason";
-import ScreenShareControlView from "../ScreenShareControlView.vue";
-import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
-import ElectronWindowsControlButtonView from "../../common/ElectronWindowsControlButtonView";
-import store from "../../../store";
 import VideoType from "../../wfc/av/engine/videoType";
-import IpcEventType from "../../../ipcEventType";
 import ConferenceParticipantVideoView from "./ConferenceParticipantVideoView.vue";
-import ConversationView from "../../main/conversation/ConversationView";
+// import ConversationView from "../../main/conversation/ConversationView";
 import ConferenceSimpleInfoView from "./ConferenceSimpleInfoView.vue";
 import ChooseConferenceLayoutView from "./ChooseConferenceLayoutView.vue";
-import ConferenceConversationFloatingView from "./ConferenceConversationFloatingView.vue";
+// import ConferenceConversationFloatingView from "./ConferenceConversationFloatingView.vue";
 import conferenceManager from "./conferenceManager";
 import ConferenceManageView from "./ConferenceManageView.vue";
 import wfc from "../../wfc/client/wfc";
-import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
+import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 
 export default {
     name: 'Conference',
@@ -260,7 +246,6 @@ export default {
             showSlider: false,
             showConferenceManageView: false,
             showConversationView: false,
-            sharedMiscState: store.state.misc,
             videoInputDeviceIndex: 0,
 
             refreshUserInfoInternal: 0,
@@ -286,13 +271,11 @@ export default {
     },
     components: {
         ConferenceManageView,
-        ConferenceConversationFloatingView,
+        // ConferenceConversationFloatingView,
         ChooseConferenceLayoutView,
         ConferenceSimpleInfoView,
         ConferenceParticipantVideoView,
-        ScreenShareControlView,
-        ElectronWindowsControlButtonView,
-        ConversationView
+        // ConversationView
     },
     methods: {
         setupSessionCallback() {
@@ -388,17 +371,20 @@ export default {
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
                 console.log('didParticipantJoined', userId, screenSharing)
-                let userInfo = wfc.getUserInfo(userId);
-                let subscriber = this.session.getSubscriber(userId, screenSharing);
-                userInfo._stream = subscriber.stream;
-                userInfo._isAudience = subscriber.audience;
-                userInfo._isHost = this.session.host === userId;
-                userInfo._isVideoMuted = subscriber.videoMuted;
-                userInfo._isAudioMuted = subscriber.audioMuted;
-                userInfo._volume = 0;
-                userInfo._isScreenSharing = screenSharing;
-                this.participantUserInfos.push(userInfo);
-                console.log('joined', userInfo, subscriber.audience, this.participantUserInfos.length);
+                this.$getUserInfo(userId, (userInfo) => {
+                    let subscriber = this.session.getSubscriber(userId, screenSharing);
+                    userInfo._stream = subscriber.stream;
+                    userInfo._isAudience = subscriber.audience;
+                    userInfo._isHost = this.session.host === userId;
+                    userInfo._isVideoMuted = subscriber.videoMuted;
+                    userInfo._isAudioMuted = subscriber.audioMuted;
+                    userInfo._volume = 0;
+                    userInfo._isScreenSharing = screenSharing;
+                    this.participantUserInfos.push(userInfo);
+                    console.log('joined', userInfo, subscriber.audience, this.participantUserInfos.length);
+                }, err => {
+                    console.log('getUserInfo error', err);
+                })
             }
 
             sessionCallback.didParticipantLeft = (userId, endReason, screenSharing) => {
@@ -422,7 +408,7 @@ export default {
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
                     let obj = {reason: reason, session: this.session};
-                    localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
+                    // localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
                 }
                 this.session.closeVoipWindow();
                 this.session = null;
@@ -722,57 +708,13 @@ export default {
                 }
                 // currentWindow.setIgnoreMouseEvents(false)
             } else {
-                if (isElectron()) {
-                    let beforeClose = (event) => {
-                        // What a gamble... 50% chance to cancel closing
-                        if (!event.params) {
-                            return;
-                        }
-                        if (event.params.source) {
-                            let source = event.params.source;
-                            let desktopShareOptions = {
-                                sourceId: source.id,
-                                minWidth: 1280,
-                                maxWidth: 1280,
-                                minHeight: 720,
-                                maxHeight: 720
-                            }
 
-                            if (this.session.audience) {
-                                this.session.switchAudience(false)
-                                    .then(() => {
-                                        this.session.startScreenShare(desktopShareOptions);
-                                    })
-                                    .catch(err => {
-                                        console.error(err)
-                                    });
-                            } else {
-                                this.session.startScreenShare(desktopShareOptions);
-                            }
-                            avenginekitproxy.emitToMain(IpcEventType.START_SCREEN_SHARE, {})
-                        }
-                    };
-                    this.$modal.show(
-                        ScreenOrWindowPicker,
-                        {}, {
-                            width: 800,
-                            height: 600,
-                            name: 'screen-window-picker-modal',
-                            clickToClose: false,
-                        }, {
-                            // 'before-open': beforeOpen,
-                            'before-close': beforeClose,
-                            // 'closed': closed,
-                        })
-                } else {
-
-                    if (this.session.audience) {
-                        await this.session.switchAudience(false);
-                    }
-                    this.session.startScreenShare({
-                        frameRate: 30
-                    });
+                if (this.session.audience) {
+                    await this.session.switchAudience(false);
                 }
+                this.session.startScreenShare({
+                    frameRate: 30
+                });
             }
         },
 
@@ -1186,30 +1128,7 @@ export default {
 
     mounted() {
         this.setupSessionCallback();
-
-        if (isElectron()) {
-            //
-            // this.$on('stop-screen-share', () => {
-            //     this.session.stopScreenShare();
-            //     this.$forceUpdate();
-            // })
-            window.addEventListener("mousemove", (event) => {
-                if (!this.session || !this.session.screenSharing) {
-                    return;
-                }
-                if (event.target.id === "main-content-container") {
-                    currentWindow.setIgnoreMouseEvents(true, {forward: true});
-                } else {
-                    currentWindow.setIgnoreMouseEvents(false);
-                }
-            });
-            window.addEventListener("mouseleave", (event) => {
-                currentWindow.setIgnoreMouseEvents(false);
-            })
-            this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '30px');
-        } else {
-            this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
-        }
+        this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
     },
 
     destroyed() {

@@ -12,7 +12,9 @@
     "base64-arraybuffer": "^1.0.2",
     "core-js": "^3.6.5",
     "long": "^5.2.3",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vue-click-outside": "^1.1.0",
+    "vue-context": "^6.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.4",
