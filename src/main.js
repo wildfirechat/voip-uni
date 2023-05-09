@@ -6,34 +6,51 @@ import VueContext from "vue-context";
 Vue.config.productionTip = false
 
 let requestId = 0;
-let getUserInfoCbMap = new Map();
-let pickGroupMemberCbMap = new Map();
+let cbWrapperMap = new Map();
+let cbMap = new Map();
 
+avenginekitproxy.listenVoipEvent('getUserIdResult', (event, args) => {
+    let {requestId, error, userId} = args;
+    let cb = cbMap.get(requestId)
+    if (cb) {
+        if (!error) {
+            cb(userId);
+        }
+        cbMap.delete(requestId);
+    }
+})
 avenginekitproxy.listenVoipEvent('getUserInfoResult', (event, args) => {
     let {requestId, error, userInfo} = args;
-    let cbs = getUserInfoCbMap.get(requestId)
+    let cbs = cbWrapperMap.get(requestId)
     if (cbs) {
         if (!error) {
             cbs.successCB(userInfo);
         } else {
             cbs.failCB(error);
         }
-        getUserInfoCbMap.delete(requestId);
+        cbWrapperMap.delete(requestId);
     }
 })
 avenginekitproxy.listenVoipEvent('pickGroupMembersResult', (event, args) => {
     let {requestId, error, users} = args;
-    let cb = pickGroupMemberCbMap.get(requestId)
+    let cb = cbMap.get(requestId)
     if (cb) {
         if (!error) {
             cb(users);
         }
-        pickGroupMemberCbMap.delete(requestId);
+        cbMap.delete(requestId);
     }
 })
 
+Vue.prototype.$getUserId = (successCB) => {
+    cbMap.set(requestId, successCB);
+    avenginekitproxy.emitToMain('getUserId', {
+        requestId: requestId++
+    })
+}
+
 Vue.prototype.$getUserInfo = (userId, successCB, failCB) => {
-    getUserInfoCbMap.set(requestId, {successCB, failCB});
+    cbWrapperMap.set(requestId, {successCB, failCB});
     avenginekitproxy.emitToMain('getUserInfo', {
         userId: userId,
         requestId: requestId++
@@ -41,7 +58,7 @@ Vue.prototype.$getUserInfo = (userId, successCB, failCB) => {
 }
 
 Vue.prototype.$pickGroupMembers = (groupId, initialCheckedUsers, uncheckableUsers, successCB) => {
-    pickGroupMemberCbMap.set(requestId, successCB)
+    cbMap.set(requestId, successCB)
     avenginekitproxy.emitToMain('pickGroupMembers', {
         groupId,
         initialCheckedUsers,

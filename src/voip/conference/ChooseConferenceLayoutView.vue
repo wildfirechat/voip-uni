@@ -61,7 +61,6 @@ export default {
 <style scoped>
 .choose-layout-container {
     width: 300px;
-    height: 145px;
     padding: 10px;
     background: white;
     border-radius: 2px;

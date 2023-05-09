@@ -120,8 +120,8 @@ export default {
 <style scoped>
 .conference-manage-view-container {
     display: none;
-    height: 100%;
-    overflow: auto;
+    width: 100%;
+    flex: 1;
     background-color: #ffffffe5;
     backdrop-filter: blur(6px);
     border-left: 1px solid #e6e6e6;

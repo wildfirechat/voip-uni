@@ -100,6 +100,16 @@ export class AvEngineKitProxy {
         })
     }
 
+    // called by uniapp
+    getUserIdListener(event, args) {
+        let userId = wfc.getUserId();
+        this.emitToVoip('getUserIdResult', {
+            error: 0,
+            requestId: args.requestId,
+            userId: userId
+        })
+    }
+
     // call by uniapp
     pickGroupMembers = (event, args) => {
         let {groupId, initialCheckedUsers, uncheckableUsers, requestId} = args;
@@ -377,6 +387,9 @@ export class AvEngineKitProxy {
                 break;
             case 'update-call-start-message':
                 this.updateCallStartMessageContentListener(event, args);
+                break;
+            case 'getUserId':
+                this.getUserIdListener(event, args);
                 break;
             case 'getUserInfo':
                 this.getUserInfoListener(event, args);

@@ -12,8 +12,19 @@
         </div>
         <div v-if="session" class="main-slider-container"
              v-bind:style="{display: 'flex'}">
-            <div class="main">
-                <header style="background: white; height: 20px; display: flex; justify-content: space-between">
+            <ConferenceManageView
+                v-if="showConferenceManageView"
+                v-bind:class="{ active: showConferenceManageView}"
+                :participants="participantUserInfos"
+                :session="session"
+            />
+            <ConversationView v-else-if="showConversationView"
+                              class="conversation-view"
+                              style="height: 100%"
+                              :title="conferenceManager.conferenceInfo.conferenceTitle"
+                              :input-options="{disableScreenShot:true, disableHistory:true, disableVoip:true, disableChannelMenu:true}"/>
+            <div v-else class="main">
+                <header style="background: white; height: 40px; display: flex; justify-content: space-between">
                     <a href="#">
                         <i class="icon-ion-information" style="padding: 0 10px"
                            id="info-icon"
@@ -29,22 +40,18 @@
                                v-bind:class="{active:showChooseLayoutView}"
                                @click="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
                         </a>
-                        <!--                        TODO 条件显示，展示聊天界面，或者参与者列表界面时，才展示-->
-                        <a href="#" v-if="showSlider">
-                            <i :class="showSlider? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'" style="padding: 0 10px" @click="toggleSliderView"></i>
-                        </a>
                     </div>
                 </header>
                 <div v-if="showConferenceSimpleInfoView"
                      v-click-outside="hideConferenceSimpleInfoView"
-                     style="position: absolute; left: 10px; top: 50px; z-index: 1000">
+                     style="position: absolute; left: 5px; top: 25px; z-index: 1000">
                     <ConferenceSimpleInfoView
                         :session="session"
                     />
                 </div>
                 <div v-if="showChooseLayoutView"
                      v-click-outside="hideChooseLayoutView"
-                     style="position: absolute; right: 10px; top: 50px; z-index: 1000">
+                     style="position: absolute; right: 5px; top: 25px; z-index: 1000">
                     <ChooseConferenceLayoutView
                         :current-layout="computedCurrentLayout"
                         :session="session"/>
@@ -133,82 +140,67 @@
                             </div>
                         </section>
                     </div>
-                    <!--actions-->
-                    <footer>
-                        <div class="duration-action-container">
-                            <p v-if="false">{{ duration }}</p>
-                            <div class="action-container">
-                                <div class="action">
-                                    <img v-if="!session.audience && !session.audioMuted" @click="muteAudio" class="action-img"
-                                         src='@/assets/images/av_conference_audio.png'/>
-                                    <img v-else @click="muteAudio" class="action-img"
-                                         src='@/assets/images/av_conference_audio_mute.png'/>
-                                    <p>静音</p>
-                                </div>
-                                <div class="action"
-                                     v-if="!session.screenSharing">
-                                    <img v-if="!session.audience && !session.videoMuted" @click="muteVideo" class="action-img"
-                                         src='@/assets/images/av_conference_video.png'/>
-                                    <img v-else @click="muteVideo" class="action-img"
-                                         src='@/assets/images/av_conference_video_mute.png'/>
-                                    <p>视频</p>
-                                </div>
-                                <div class="action">
-                                    <img v-if="!session.screenSharing" @click="screenShare"
-                                         class="action-img"
-                                         src='@/assets/images/av_conference_screen_sharing.png'/>
-                                    <img v-else @click="screenShare" class="action-img"
-                                         src='@/assets/images/av_conference_screen_sharing_hover.png'/>
-                                    <p class="single-line">共享屏幕</p>
-                                </div>
-                                <div class="action" @click="chat">
-                                    <i class="icon-ion-ios-chatboxes"
-                                       style="width: 40px; height: 40px; font-size: 40px; color: black"
-                                       v-bind:style="{color: showConversationView ? 'white' : 'black'}"/>
-                                    <p>聊天</p>
-                                </div>
-                                <div v-if="selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action">
-                                    <img v-if="!conferenceManager.isHandUp" @click="handup"
-                                         class="action-img"
-                                         src='@/assets/images/av_conference_handup.png'/>
-                                    <img v-else @click="handup" class="action-img"
-                                         src='@/assets/images/av_conference_handup_hover.png'/>
-                                    <p class="single-line">举手</p>
-                                </div>
-                                <div class="action">
-                                    <img @click.stop="members" class="action-img"
-                                         v-bind:style="{filter: showConferenceManageView ? 'invert(100%)' : 'none'}"
-                                         src='@/assets/images/av_conference_members.png'/>
-                                    <p>管理</p>
-                                </div>
-                                <div class="action">
-                                    <img @click="hangup" class="action-img"
-                                         src='@/assets/images/av_conference_end_call.png'/>
-                                    <p>结束</p>
-                                </div>
-                            </div>
-                        </div>
-                    </footer>
                 </div>
 
             </div>
-            <div class="slider">
-                <div class="title" style="display: none">
-                    TODO
+            <!--actions-->
+            <footer>
+                <div class="duration-action-container">
+                    <p v-if="false">{{ duration }}</p>
+                    <div class="action-container">
+                        <div class="action">
+                            <img v-if="!session.audience && !session.audioMuted" @click="muteAudio" class="action-img"
+                                 src='@/assets/images/av_conference_audio.png'/>
+                            <img v-else @click="muteAudio" class="action-img"
+                                 src='@/assets/images/av_conference_audio_mute.png'/>
+                            <p>静音</p>
+                        </div>
+                        <div class="action"
+                             v-if="!session.screenSharing">
+                            <img v-if="!session.audience && !session.videoMuted" @click="muteVideo" class="action-img"
+                                 src='@/assets/images/av_conference_video.png'/>
+                            <img v-else @click="muteVideo" class="action-img"
+                                 src='@/assets/images/av_conference_video_mute.png'/>
+                            <p>视频</p>
+                        </div>
+                        <div class="action" style="display: none">
+                            <img v-if="!session.screenSharing" @click="screenShare"
+                                 class="action-img"
+                                 src='@/assets/images/av_conference_screen_sharing.png'/>
+                            <img v-else @click="screenShare" class="action-img"
+                                 src='@/assets/images/av_conference_screen_sharing_hover.png'/>
+                            <p class="single-line">共享屏幕</p>
+                        </div>
+                        <div class="action" @click="chat">
+                            <i class="icon-ion-ios-chatboxes"
+                               style="width: 40px; height: 40px; font-size: 40px; color: black"
+                               v-bind:style="{color: showConversationView ? 'white' : 'black'}"/>
+                            <p>聊天</p>
+                        </div>
+                        <div v-if="selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action">
+                            <img v-if="!conferenceManager.isHandUp" @click="handup"
+                                 class="action-img"
+                                 src='@/assets/images/av_conference_handup.png'/>
+                            <img v-else @click="handup" class="action-img"
+                                 src='@/assets/images/av_conference_handup_hover.png'/>
+                            <p class="single-line">举手</p>
+                        </div>
+                        <div class="action">
+                            <img @click.stop="members" class="action-img"
+                                 v-bind:style="{filter: showConferenceManageView ? 'invert(100%)' : 'none'}"
+                                 src='@/assets/images/av_conference_members.png'/>
+                            <p>管理</p>
+                        </div>
+                        <div class="action">
+                            <img @click="hangup" class="action-img"
+                                 src='@/assets/images/av_conference_end_call.png'/>
+                            <p>结束</p>
+                        </div>
+                    </div>
                 </div>
-                <ConferenceManageView
-                    v-if="showConferenceManageView"
-                    v-bind:class="{ active: showConferenceManageView}"
-                    :participants="participantUserInfos"
-                    :session="session"
-                />
-                <ConversationView v-if="showConversationView"
-                                  class="conversation-view"
-                                  style="height: 100%"
-                                  :title="conferenceManager.conferenceInfo.conferenceTitle"
-                                  :input-options="{disableScreenShot:true, disableHistory:true, disableVoip:true, disableChannelMenu:true}"/>
-            </div>
+            </footer>
         </div>
+
     </div>
 </template>
 
@@ -228,16 +220,17 @@ import ChooseConferenceLayoutView from "./ChooseConferenceLayoutView.vue";
 import conferenceManager from "./conferenceManager";
 import ConferenceManageView from "./ConferenceManageView.vue";
 import wfc from "../../wfc/client/wfc";
-import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
+import CallSession from "@/wfc/av/engine/callSession";
+import UserInfo from "@/wfc/model/userInfo";
 
 export default {
     name: 'Conference',
     data() {
         return {
-            session: null,
+            session: new CallSession(),
             audioOnly: false,
             status: 1,
-            selfUserInfo: null,
+            selfUserInfo: new UserInfo(),
             participantUserInfos: [],
 
             startTimestamp: 0,
@@ -615,42 +608,14 @@ export default {
 
         members() {
             this.showConferenceManageView = !this.showConferenceManageView;
-            this.toggleSliderView();
         },
 
         chat() {
             this.showConversationView = !this.showConversationView;
-            this.toggleSliderView();
         },
 
         hideParticipantList() {
             this.showConferenceManageView && (this.showConferenceManageView = false);
-            this.toggleSliderView();
-        },
-
-        toggleSliderView() {
-            if (!this.showSlider) {
-                if (isElectron()) {
-                    let size = currentWindow.getSize();
-                    currentWindow.setSize(size[0] + 350, size[1], false)
-                } else {
-                    window.resizeTo(window.innerWidth + 360, window.outerHeight);
-                }
-                this.$refs.rootContainer.style.setProperty('--slider-width', '350px');
-            } else {
-                if (isElectron()) {
-                    let size = currentWindow.getSize();
-                    this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
-                    currentWindow.setSize(size[0] - 350, size[1], false)
-                } else {
-                    this.$refs.rootContainer.style.setProperty('--slider-width', '0px');
-                    window.resizeTo(window.innerWidth - 350, window.outerHeight)
-                }
-
-                this.showConferenceManageView = false;
-                this.showConversationView = false;
-            }
-            this.showSlider = !this.showSlider;
         },
 
 
@@ -1128,7 +1093,7 @@ export default {
 
     mounted() {
         this.setupSessionCallback();
-        this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
+        // this.$refs.rootContainer.style.setProperty('--conference-container-margin-top', '0px');
     },
 
     destroyed() {
@@ -1147,7 +1112,6 @@ export default {
 .voip-container {
     background: #00000000 !important;
     position: relative;
-    --conference-container-margin-top: 30px;
     --slider-width: 0px;
     --main-width: 100%;
 }
@@ -1166,19 +1130,21 @@ i.active {
 
 .main-slider-container {
     width: 100vw;
-    margin-top: var(--conference-container-margin-top);
-    height: calc(100vh - var(--conference-container-margin-top));
+    height: 100vh;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .main-slider-container .main {
-    width: calc(100% - var(--slider-width));
-    height: 100%;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .main-slider-container .slider {
-    width: var(--slider-width);
+    width: 100%;
     height: 100%;
     overflow: auto;
     background: white;
@@ -1196,7 +1162,6 @@ i.active {
 
 .content-container {
     width: 100%;
-    height: 100%;
     position: relative;
     display: flex;
     flex: 1;
@@ -1234,7 +1199,6 @@ i.active {
     background: white;
     height: calc(100% - 50px);
     overflow: auto;
-    padding: 10px 0 50px 0;
 }
 
 .participant-audio-item {
@@ -1278,11 +1242,12 @@ i.active {
 
 footer {
     /*height: 100px;*/
-    display: none;
+//display: none;
 }
 
 .duration-action-container {
     display: flex;
+    background: gray;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -1294,9 +1259,9 @@ footer {
 }
 
 .action-container {
-    /*width: 100%;*/
+    width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
 }
 
 .action-container .action {
@@ -1306,7 +1271,6 @@ footer {
     align-items: center;
     font-size: 12px;
     color: white;
-    padding: 0 25px 0 25px;
 }
 
 .avatar {
