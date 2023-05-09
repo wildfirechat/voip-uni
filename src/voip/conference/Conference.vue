@@ -10,8 +10,7 @@
         <div v-if="endReason !== undefined && endReason === 4" @click="rejoinConference" class="rejoin-container">
             会议断开，点击重新加入
         </div>
-        <div v-if="session" class="main-slider-container"
-             v-bind:style="{display: 'flex'}">
+        <div v-if="session" class="main-slider-container">
             <ConferenceManageView
                 v-if="showConferenceManageView"
                 v-bind:class="{ active: showConferenceManageView}"
@@ -81,7 +80,7 @@
 
                         <!--                    演讲者布局-->
                         <section v-else class="content-container focus video">
-                            <div :style="{width: hideFocusLayoutParticipantListVideoView ? '100%' : 'calc(100% - 200px)', height: '100%', position: 'relative'}">
+                            <div :style="{width: '100%', height: '100%', position: 'relative'}">
                                 <video v-if="computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && (!computedFocusVideoParticipant._isVideoMuted || computedFocusVideoParticipant._isScreenSharing) && computedFocusVideoParticipant._stream"
                                        v-bind:style="{objectFit:computedFocusVideoParticipant._isScreenSharing ? 'contain' : 'fit'}"
                                        style="width: 100%; height: 100%"
@@ -209,7 +208,6 @@ import avenginekit from "../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import ClickOutside from 'vue-click-outside'
-import {currentWindow, isElectron} from "../../platform";
 import CallEndReason from "../../wfc/av/engine/callEndReason";
 import VideoType from "../../wfc/av/engine/videoType";
 import ConferenceParticipantVideoView from "./ConferenceParticipantVideoView.vue";
@@ -222,6 +220,7 @@ import ConferenceManageView from "./ConferenceManageView.vue";
 import wfc from "../../wfc/client/wfc";
 import CallSession from "@/wfc/av/engine/callSession";
 import UserInfo from "@/wfc/model/userInfo";
+import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 
 export default {
     name: 'Conference',
@@ -403,7 +402,7 @@ export default {
                     let obj = {reason: reason, session: this.session};
                     // localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
                 }
-                this.session.closeVoipWindow();
+                avenginekitproxy.emitToMain('didCallEndWithReason', reason)
                 this.session = null;
             }
 
@@ -1026,10 +1025,6 @@ export default {
                         width = '25%';
                         height = '25%'
                     }
-                    if (this.$refs.rootContainer) {
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
-                    }
                 }
             }
         },
@@ -1056,10 +1051,6 @@ export default {
                         // max 16
                         width = '25%';
                         height = '25%'
-                    }
-                    if (this.$refs.rootContainer) {
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
                 }
             }
@@ -1112,8 +1103,6 @@ export default {
 .voip-container {
     background: #00000000 !important;
     position: relative;
-    --slider-width: 0px;
-    --main-width: 100%;
 }
 
 a {
@@ -1141,6 +1130,7 @@ i.active {
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .main-slider-container .slider {
@@ -1152,19 +1142,15 @@ i.active {
 
 .conference-main-content-container {
     width: 100%;
-    height: calc(100% - 20px);
+    height: calc(100% - 40px);
     position: relative;
-    /*flex: 1;*/
-    /*flex-direction: column;*/
-    /*justify-content: space-between;*/
-    /*align-items: center;*/
 }
 
 .content-container {
     width: 100%;
+    height: 100%;
     position: relative;
     display: flex;
-    flex: 1;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -1176,8 +1162,6 @@ i.active {
 }
 
 .main-slider-container .focus {
-    --participant-video-item-width: 200px;
-    --participant-video-item-height: 100px;
     flex-direction: column;
 }
 
@@ -1187,9 +1171,9 @@ i.active {
 }
 
 .focus-mode-participant-list-container {
-    /*position: absolute;*/
-    /*top: 0;*/
-    /*right: 0;*/
+    position: absolute;
+    top: 0;
+    right: 0;
     width: 200px;
     height: 100%;
     overflow: auto;
@@ -1241,8 +1225,6 @@ i.active {
 }
 
 footer {
-    /*height: 100px;*/
-//display: none;
 }
 
 .duration-action-container {
@@ -1251,6 +1233,7 @@ footer {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 100;
 }
 
 .duration-action-container p {

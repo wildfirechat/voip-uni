@@ -152,8 +152,8 @@ export default {
 .participant-video-item {
     display: flex;
     position: relative;
-    width: var(--participant-video-item-width);
-    height: var(--participant-video-item-height);
+    width: 200px;
+    height: 100px;
     /*background-color: rebeccapurple;*/
 
     flex-direction: column;
