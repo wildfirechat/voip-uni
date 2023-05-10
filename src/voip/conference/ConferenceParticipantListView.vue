@@ -315,6 +315,7 @@ export default {
 </script>
 
 <style scoped>
+
 .participant-list-container {
     display: flex;
     flex-direction: column;

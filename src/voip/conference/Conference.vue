@@ -1100,6 +1100,7 @@ export default {
 
 <style lang="css" scoped>
 
+
 .voip-container {
     background: #00000000 !important;
     position: relative;
