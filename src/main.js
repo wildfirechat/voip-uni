@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from "@/App.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import VueContext from "vue-context";
+import '@/assets/fonts/icomoon/style.css'
 
 Vue.config.productionTip = false
 
