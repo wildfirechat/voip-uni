@@ -11,6 +11,9 @@ import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
 import app from "../../../main";
+import Message from "@/wfc/messages/message";
+import MessageContent from "@/wfc/messages/messageContent";
+import ConferenceInviteMessageContent from "@/wfc/av/messages/conferenceInviteMessageContent";
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -128,6 +131,18 @@ export class AvEngineKitProxy {
                     users
                 })
             }
+        });
+    }
+
+    // called by uniapp
+    inviteConferenceParticipant(event, args) {
+        console.log('inviteConferenceParticipant', args)
+        let inviteMessageContent = Object.assign(new ConferenceInviteMessageContent(), args.inviteMessageContent);
+        let message = new Message(null, inviteMessageContent)
+        let messages = [message];
+        app.$forward({
+            forwardType: 0/*ForwardType.NORMAL*/,
+            messages: messages,
         });
     }
 
@@ -396,6 +411,9 @@ export class AvEngineKitProxy {
                 break;
             case 'pickGroupMembers':
                 this.pickGroupMembers(event, args);
+                break;
+            case 'inviteConferenceParticipant':
+                this.inviteConferenceParticipant(event, args);
                 break;
             case 'didCallEndWithReason':
                 this.didCallEndWithReason(event, args);

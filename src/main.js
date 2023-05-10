@@ -69,6 +69,12 @@ Vue.prototype.$pickGroupMembers = (groupId, initialCheckedUsers, uncheckableUser
     })
 }
 
+Vue.prototype.$inviteConferenceParticipant = inviteMessageContent => {
+    avenginekitproxy.emitToMain('inviteConferenceParticipant', {
+        inviteMessageContent
+    })
+}
+
 Vue.prototype.$eventBus = new Vue();
 
 Vue.use(VueContext);

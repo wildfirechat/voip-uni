@@ -84,16 +84,7 @@ export default {
         invite() {
             let callSession = this.session;
             let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin)
-            console.log('invite', inviteMessageContent);
-            if (isElectron()) {
-                let message = new Message(null, inviteMessageContent);
-                this.$forwardMessage({
-                    forwardType: ForwardType.NORMAL,
-                    messages: [message]
-                });
-            } else {
-                // localStorageEmitter.send(LocalStorageIpcEventType.inviteConferenceParticipant, {messagePayload: inviteMessageContent.encode()})
-            }
+            this.$inviteConferenceParticipant(inviteMessageContent);
             this.showParticipantList = false;
         },
 
