@@ -10,10 +10,9 @@ import MessageConfig from "../../client/messageConfig";
 import Config from "../../../config";
 import {longValue, numberValue} from '../../util/longUtil'
 import Conversation from "../../../wfc/model/conversation";
-import app from "../../../main";
-import Message from "@/wfc/messages/message";
-import MessageContent from "@/wfc/messages/messageContent";
-import ConferenceInviteMessageContent from "@/wfc/av/messages/conferenceInviteMessageContent";
+import Message from "../../../wfc/messages/message";
+import ConferenceInviteMessageContent from "../../../wfc/av/messages/conferenceInviteMessageContent";
+import appServerApi from "@/api/appServerApi";
 
 // main window renderer process -> voip window renderer process
 // voip window renderer process -> main process -> main window renderer process
@@ -32,6 +31,7 @@ export class AvEngineKitProxy {
     hasSpeaker = true;
     hasWebcam = true;
 
+    wxVoipPage;
     voipWebview;
     voipEventListeners;
 
@@ -162,16 +162,18 @@ export class AvEngineKitProxy {
     }
 
     updateCallStartMessageContentListener = (event, message) => {
-        let messageUid = message.messageUid;
-        let content = message.content;
-
-        let msg = wfc.getMessageByUid(messageUid);
-        let orgContent = msg.messageContent;
-        orgContent.connectTime = content.connectTime ? content.connectTime : orgContent.connectTime;
-        orgContent.endTime = content.endTime ? content.endTime : orgContent.endTime;
-        orgContent.status = content.status;
-        orgContent.audioOnly = content.audioOnly;
-        wfc.updateMessageContent(msg.messageId, orgContent);
+        // TODO
+        return;
+        // let messageUid = message.messageUid;
+        // let content = message.content;
+        //
+        // let msg = wfc.getMessageByUid(messageUid);
+        // let orgContent = msg.messageContent;
+        // orgContent.connectTime = content.connectTime ? content.connectTime : orgContent.connectTime;
+        // orgContent.endTime = content.endTime ? content.endTime : orgContent.endTime;
+        // orgContent.status = content.status;
+        // orgContent.audioOnly = content.audioOnly;
+        // wfc.updateMessageContent(msg.messageId, orgContent);
     }
 
     sendConferenceRequestListener = (event, request) => {
@@ -193,8 +195,6 @@ export class AvEngineKitProxy {
         let content = new contentClazz();
         content.decode(msg.content);
         console.log('to send voip message', content);
-        let delta = wfc.getServerDeltaTime();
-        console.log('delta', delta);
         if (content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT) {
             this.participants.push(content.participants);
         } else if (content.type === MessageContentType.VOIP_CONTENT_TYPE_END) {
@@ -208,26 +208,36 @@ export class AvEngineKitProxy {
                 return;
             }
         }
+
         let conversation = new Conversation(msg.conversation.type, msg.conversation.target, msg.conversation.line)
-        wfc.sendConversationMessage(conversation, content, msg.toUsers, (messageId, timestamp) => {
-
-            // do nothing
-        }, (uploaded, total) => {
-
-            // do nothing
-        }, (messageUid, timestamp) => {
-            this.emitToVoip('sendMessageResult', {
-                error: 0,
-                sendMessageId: msg.sendMessageId,
-                messageUid: messageUid,
-                timestamp: longValue(numberValue(timestamp) - delta)
+        appServerApi.sendMessage(new Message(conversation, content))
+            .then(result => {
+                let {messageUid, timestamp} = result
+                console.log('app server, sendMessage result', result);
+                // 本身就是在 webview 里面
+                window.msgFromUniapp({
+                    event: 'sendMessageResult',
+                    args: {
+                        error: 0,
+                        sendMessageId: msg.sendMessageId,
+                        messageUid: messageUid,
+                        timestamp: longValue(timestamp)
+                    }
+                });
+                if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
+                    this.inviteMessageUid = messageUid;
+                }
             })
-            if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
-                this.inviteMessageUid = messageUid;
-            }
-        }, (errorCode) => {
-            this.emitToVoip('sendMessageResult', {error: errorCode, sendMessageId: msg.sendMessageId})
-        });
+            .catch(err => {
+                window.msgFromUniapp({
+                    event: 'sendMessageResult',
+                    args: {
+                        error: -1,
+                        sendMessageId: msg.sendMessageId,
+                    }
+                });
+            })
+        ;
     }
 
     onReceiveConferenceEvent = (event) => {
@@ -370,8 +380,14 @@ export class AvEngineKitProxy {
                 };
             // 这儿的延时目前是必须的，要等音视频页面加载完成，并监听相关事件
             setTimeout(() => {
-                console.log('emitToVoip', _data);
-                this.voipWebview.evalJS(`${_funName}(${JSON.stringify(_data)})`);
+                let baseUrl = this.voipWebview.data.url;
+                if (baseUrl.indexOf('#') > 0) {
+                    baseUrl = baseUrl.substring(0, baseUrl.indexOf('#'));
+                }
+                console.log('data', encodeURIComponent(JSON.stringify(_data, null, '')));
+                this.voipWebview.setData({
+                    url: baseUrl + '#data=' + encodeURIComponent(JSON.stringify(_data, null, ''))
+                })
             }, 1000)
         } else if (this.queueEvents) {
             this.queueEvents.push({event, args});
@@ -381,18 +397,12 @@ export class AvEngineKitProxy {
     // emit to uniapp
     emitToMain(event, args) {
         console.log('emit to main', event, args);
-        uni.postMessage({
-            data: {
-                event,
-                args
-            },
-        });
+        this.voipWebviewEventListener(event, args)
     }
 
     // called by uniapp
-    voipWebviewEventListener = evt => {
-        let {event, args} = evt.detail.data[0];
-        console.log('voipWebviewEventListener', event, evt)
+    voipWebviewEventListener = (event, args) => {
+        console.log('voipWebviewEventListener', event, args)
         switch (event) {
             case 'voip-message':
                 this.sendVoipListener(event, args);
@@ -602,8 +612,8 @@ export class AvEngineKitProxy {
 
     showCallUI(conversation, isConference) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
-        uni.navigateTo({
-            url: `/pages/voip/VoipPage?type=${type}`,
+        wx.navigateTo({
+            url: `/pages/voip/voip?type=${type}`,
             fail: (e) => {
                 console.log(e)
             }
@@ -611,5 +621,6 @@ export class AvEngineKitProxy {
     }
 }
 
-const self = new AvEngineKitProxy();
+const
+    self = new AvEngineKitProxy();
 export default self;

@@ -300,6 +300,7 @@ export default {
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();
+        console.log('single mounted');
 
         // setTimeout(() => {
         //     this.$getUserInfo("FireRobot", (userInfo) => {
