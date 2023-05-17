@@ -148,17 +148,18 @@ export class AvEngineKitProxy {
 
     didCallEndWithReason(event, reason) {
         // 如果 pages.json 里面了改了VoipPage 页面的 path，这儿需要进行相应的修改
-        const voipPageRoute = 'pages/voip/VoipPage'
-        let pages = getCurrentPages();
-        let delta = 0;
-        for (let i = pages.length - 1; i >= 0; i--) {
-            let page = pages[i];
-            delta++;
-            if (page.route === voipPageRoute) {
-                break;
-            }
-        }
-        uni.navigateBack({delta})
+        // const voipPageRoute = 'pages/voip/VoipPage'
+        // let pages = getCurrentPages();
+        // let delta = 0;
+        // for (let i = pages.length - 1; i >= 0; i--) {
+        //     let page = pages[i];
+        //     delta++;
+        //     if (page.route === voipPageRoute) {
+        //         break;
+        //     }
+        // }
+        // uni.navigateBack({delta})
+        wx.miniProgram.navigateBack();
     }
 
     updateCallStartMessageContentListener = (event, message) => {
@@ -246,14 +247,6 @@ export class AvEngineKitProxy {
 
     // 收到消息时，timestamp已经过修正，后面使用时，不用考虑和服务器的时间差
     onReceiveMessage = (msg) => {
-        if (!Config.ENABLE_MULTI_VOIP_CALL && msg.conversation.type === ConversationType.Group) {
-            console.log('not enable multi call ');
-            return;
-        }
-        if (!Config.ENABLE_SINGLE_VOIP_CALL && msg.conversation.type === ConversationType.Single) {
-            console.log('not enable multi call ');
-            return;
-        }
         let now = (new Date()).valueOf();
         let delta = wfc.getServerDeltaTime();
         if (now - (numberValue(msg.timestamp) - delta) >= 90 * 1000) {
