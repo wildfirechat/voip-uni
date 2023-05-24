@@ -5,9 +5,11 @@
 
 ## 测试
 1. `npm run serve`运行本项目
-2. `uni-chat` 需要使用`dev-voip`分支
-3. 修改`VoipPage.vue`里面的`voipBaseWebUrl`，这个地址一定要是`https`地址，否则不能进行音视频通话
-4. 目前默认使用的是会议版音视频 SDK
+2. `wx-chat`切换到`dev-voip`分支
+3. 修改 `wx-chat` 项目 `voip.js` 里面的 `url` 为 第1步运行得到的`url`，不能用`localhost`那个
+4. 小程序开发者工具，配置不校验合法域名
+5. 真机预览`wx-chat`，可以是手机真机或电脑真机预览
+6. 目前默认使用的是会议版音视频 SDK
 
 **WIP**
 
