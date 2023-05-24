@@ -332,17 +332,21 @@ export default {
         },
 
         invite() {
-            let successCB = users => {
-                console.log('pick users', users);
-                let userIds = users.map(u => u.uid);
-                this.session.inviteNewParticipants(userIds);
-            }
-            this.$pickGroupMembers(
-                this.session.conversation.target,
-                [...this.session.participantUserInfos, this.session.selfUserInfo],
-                [...this.session.participantUserInfos, this.session.selfUserInfo],
-                successCB,
-            );
+            this.$notify({
+                text: '暂未实现'
+            });
+            // TODO 实现小程序选人功能
+            // let successCB = users => {
+            //     console.log('pick users', users);
+            //     let userIds = users.map(u => u.uid);
+            //     this.session.inviteNewParticipants(userIds);
+            // }
+            // this.$pickGroupMembers(
+            //     this.session.conversation.target,
+            //     [...this.session.participantUserInfos, this.session.selfUserInfo],
+            //     [...this.session.participantUserInfos, this.session.selfUserInfo],
+            //     successCB,
+            // );
         },
 
         userName(user) {
