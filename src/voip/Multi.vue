@@ -392,7 +392,7 @@ export default {
     },
 
     mounted() {
-        new VConsole();
+        //new VConsole();
         avenginekit.setup();
         this.setupSessionCallback();
     },

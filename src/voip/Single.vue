@@ -296,7 +296,7 @@ export default {
     },
 
     mounted() {
-        new VConsole();
+        //new VConsole();
         // 必须
         avenginekit.setup();
         this.setupSessionCallback();

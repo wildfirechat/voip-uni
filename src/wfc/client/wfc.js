@@ -6,10 +6,9 @@ import {EventEmitter} from 'events';
 import {atob, btoa} from '../util/base64.min.js';
 import Long from 'long';
 
+import impl from '../proto/proto.min';
 import Config from "../../config";
 import avenginekit from "../av/engine/avenginekitproxy";
-
-var impl = {};
 
 export class WfcManager {
 
@@ -1939,16 +1938,8 @@ export class WfcManager {
         impl.setMyCustomState(customState, customText, successCB, failCB)
     }
 
-    notify(title, content){
-        impl.notify(title, content)
-    }
-
-    clearAllNotification(){
-        impl.clearAllNotification();
-    }
-
-    chooseFile(type, successCB, failCB){
-        impl.chooseFile(type, successCB, failCB)
+    setupShortLink(imServerAddress, clientId, token, platform = 6/* SDK_PLATFORM_WX */){
+        impl.setupShortLink(imServerAddress, clientId, token, platform)
     }
 
     _getStore() {

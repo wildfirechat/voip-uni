@@ -14,6 +14,8 @@ import conferenceApi from "@/api/conferenceApi";
 import Conference from "@/voip/conference/Conference.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import appServerApi from "@/api/appServerApi";
+import VConsole from "vconsole";
+import wfc from "@/wfc/client/wfc";
 
 export default {
     name: 'App',
@@ -30,28 +32,23 @@ export default {
         }
     },
     created() {
+        new VConsole();
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.type = urlParams.get('type');
         const authToken = urlParams.get('authToken');
-        let callId = urlParams.get('callId');
-        let pin = urlParams.get('pin');
+        let clientId = urlParams.get('clientId');
+        let token = urlParams.get('token');
+        console.log('oo token', token);
+        // let token = atob(decodeURIComponent(urlParams.get('token')));
+        let imServerAddress = decodeURIComponent(urlParams.get('server'));
         appServerApi.authToken = authToken;
         conferenceApi.authToken = authToken;
 
-        console.log('Voip-uni created', this.type, authToken, callId, pin)
+        imServerAddress = 'http://node2.wildfirechat.net'
+        console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress)
+        wfc.setupShortLink(imServerAddress, clientId, token)
 
-        // callId = 'ooo';
-        // pin = '';
-        // if (this.type === 'conference') {
-        //     conferenceApi.queryConferenceInfo(callId, pin)
-        //         .then(info => {
-        //             console.log('conferenceInfo', info);
-        //         })
-        //         .catch(e => {
-        //             console.error('queryConferInfo error', e);
-        //         })
-        // }
         window.addEventListener("hashchange",this.onHashChange);
         window.addEventListener("popstate",()=> {
             console.log('on popstate');
