@@ -1,7 +1,16 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+const {readFileSync} = require("fs");
 
 module.exports = {
+    devServer: {
+        https: true,
+        host: '0.0.0.0',
+        port: 443,
+        disableHostCheck: true,
+        key: readFileSync('./cert/10174579_voip.wfim.work.key'),
+        cert: readFileSync('./cert/10174579_voip.wfim.work.pem')
+    },
     css: {
         extract: false,
     },
