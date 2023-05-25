@@ -32,7 +32,6 @@ export default {
         }
     },
     created() {
-        new VConsole();
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.type = urlParams.get('type');
@@ -40,13 +39,19 @@ export default {
         let clientId = urlParams.get('clientId');
         let token = urlParams.get('token');
         let imServerAddress = decodeURIComponent(urlParams.get('server'));
-        console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress)
+        let debug = urlParams.get('debug');
+        if (debug === 'true') {
+            new VConsole();
+            avenginekitproxy.debug = true;
+        }
+
+        console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress, debug)
         wfc.setupShortLink(imServerAddress, clientId, token)
 
-        window.addEventListener("hashchange",this.onHashChange);
-        window.addEventListener("popstate",()=> {
+        window.addEventListener("hashchange", this.onHashChange);
+        window.addEventListener("popstate", () => {
             console.log('on popstate');
-            if(location.hash){
+            if (location.hash) {
                 this.hash = location.hash.split('#')[1];
                 history.back();
             } else {
@@ -57,13 +62,13 @@ export default {
                 window.msgFromUniapp(JSON.parse(data));
                 // document.getElementsByTagName('body')[0].innerHTML = '解码后参数：' + this.count + ' ' + data;
             }
-            this.count ++;
+            this.count++;
         });
         console.log('listener hashchange event');
     },
 
-    methods:{
-        onHashChange(){
+    methods: {
+        onHashChange() {
             let hash = location.hash;
             console.log('onHashChanged ');
         }

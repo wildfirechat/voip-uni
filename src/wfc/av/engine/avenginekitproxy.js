@@ -32,6 +32,8 @@ export class AvEngineKitProxy {
     voipWebview;
     voipEventListeners;
 
+    debug = false;
+
     /**
      * 无法正常弹出音视频通话窗口是的回调
      * 回到参数说明：-1，有音视频通话正在进行中；-2，设备不支持音视频通话，可能原因是不支持webrtc，没有摄像头或麦克风等
@@ -158,7 +160,9 @@ export class AvEngineKitProxy {
         // uni.navigateBack({delta})
         // 这儿可能有问题
         // 比如多人通话，在邀请新参与者的页面，通话被挂断了，页面出栈可能不完全
-        wx.miniProgram.navigateBack();
+        if (!this.debug){
+            wx.miniProgram.navigateBack();
+        }
     }
 
     updateCallStartMessageContentListener = (event, message) => {
