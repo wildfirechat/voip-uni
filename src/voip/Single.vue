@@ -19,7 +19,9 @@
                                style="height: 0"
                                :srcObject.prop="localStream"
                                muted
-                               playsInline autoPlay/>
+                               @canplay="canplay"
+                               webkit-playsinline playsinline x5-playsinline preload="auto"
+                               autoPlay/>
                     </div>
                     <div class="remote-media-container">
                         <img class="avatar" :src="participantUserInfo.portrait">
@@ -28,8 +30,10 @@
                                class="video"
                                style="height: 0"
                                controls
+                               @canplay="canplay"
                                :srcObject.prop="remoteStream"
-                               playsInline autoPlay/>
+                               webkit-playsinline playsinline x5-playsinline preload="auto"
+                               autoPlay/>
                         <p>{{ participantUserInfo.displayName }}</p>
                         <p v-if="status === 1">等待对方接听</p>
                         <p v-else-if="status === 2">邀请你语音聊天</p>
@@ -47,7 +51,9 @@
                                class="localVideo me"
                                :srcObject.prop="localStream"
                                muted
-                               playsInline autoPlay/>
+                               @canplay="canplay"
+                               webkit-playsinline playsinline x5-playsinline preload="auto"
+                               autoPlay/>
                         <img v-else class="avatar" :src="session.selfUserInfo.portrait">
                     </div>
                     <div class="remote-media-container">
@@ -55,8 +61,10 @@
                                @click="switchVideoType()"
                                ref="remoteVideo"
                                class="video"
+                               @canplay="canplay"
                                :srcObject.prop="remoteStream"
-                               playsInline autoPlay/>
+                               webkit-playsinline playsinline x5-playsinline preload="auto"
+                               autoPlay/>
                         <div v-else class="flex-column flex-justify-center flex-align-center">
                             <img class="avatar" :src="participantUserInfo.portrait">
                             <p>{{ participantUserInfo.displayName }}</p>
@@ -119,7 +127,6 @@ import avenginekit from "@/wfc/av/internal/engine.min";
 import CallSessionCallback from "@/wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import VideoType from "@/wfc/av/engine/videoType";
-import VConsole from 'vconsole';
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 
 export default {
@@ -136,9 +143,35 @@ export default {
             localStream: null,
             remoteStream: null,
             videoInputDeviceIndex: 0,
+            autoPlayInterval: 0,
         }
     },
     methods: {
+        canplay() {
+            console.log('can play');
+            if (!this.autoPlayInterval) {
+                this.autoPlayInterval = setInterval(() => {
+                    try {
+                        if (this.$refs.localVideo && this.$refs.localVideo.paused) {
+                            this.$refs.localVideo.play();
+                            console.log('can play local');
+                        }
+                        if (this.$refs.remoteVideo && this.$refs.remoteVideo.paused) {
+                            this.$refs.remoteVideo.play();
+                            console.log('can play remote');
+                        }
+                    } catch (e) {
+                        // do nothing
+                    }
+
+                    if (this.$refs.localVideo && !this.$refs.localVideo.paused && this.$refs.remoteVideo && !this.$refs.remoteVideo.paused) {
+                        clearInterval(this.autoPlayInterval);
+                        this.autoPlayInterval = 0;
+                    }
+                }, 100);
+            }
+        },
+
         switchVideoType() {
             if (!this.session) {
                 return
@@ -195,10 +228,12 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream) => {
                 this.localStream = stream;
+                this.canplay();
             };
 
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
                 this.remoteStream = stream;
+                this.canplay();
             };
 
             sessionCallback.didCallEndWithReason = (reason) => {
