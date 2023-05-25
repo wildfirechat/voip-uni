@@ -45,6 +45,7 @@ export default {
             avenginekitproxy.debug = true;
         }
 
+        token = token.replaceAll('.', '+').replaceAll('_', '/').replaceAll('-', '=');
         console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress, debug)
         wfc.setupShortLink(imServerAddress, clientId, token)
 
