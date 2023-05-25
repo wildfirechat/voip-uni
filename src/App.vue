@@ -39,13 +39,7 @@ export default {
         const authToken = urlParams.get('authToken');
         let clientId = urlParams.get('clientId');
         let token = urlParams.get('token');
-        console.log('oo token', token);
-        // let token = atob(decodeURIComponent(urlParams.get('token')));
         let imServerAddress = decodeURIComponent(urlParams.get('server'));
-        appServerApi.authToken = authToken;
-        conferenceApi.authToken = authToken;
-
-        imServerAddress = 'http://node2.wildfirechat.net'
         console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress)
         wfc.setupShortLink(imServerAddress, clientId, token)
 
