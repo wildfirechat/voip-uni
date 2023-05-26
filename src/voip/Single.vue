@@ -19,7 +19,6 @@
                                style="height: 0"
                                :srcObject.prop="localStream"
                                muted
-                               @canplay="canplay"
                                webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
                     </div>
@@ -30,7 +29,6 @@
                                class="video"
                                style="height: 0"
                                controls
-                               @canplay="canplay"
                                :srcObject.prop="remoteStream"
                                webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
@@ -51,7 +49,6 @@
                                class="localVideo me"
                                :srcObject.prop="localStream"
                                muted
-                               @canplay="canplay"
                                webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
                         <img v-else class="avatar" :src="session.selfUserInfo.portrait">
@@ -61,7 +58,6 @@
                                @click="switchVideoType()"
                                ref="remoteVideo"
                                class="video"
-                               @canplay="canplay"
                                :srcObject.prop="remoteStream"
                                webkit-playsinline playsinline x5-playsinline preload="auto"
                                autoPlay/>
@@ -228,12 +224,12 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream) => {
                 this.localStream = stream;
-                this.canplay();
+                this.autoPlay();
             };
 
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream) => {
                 this.remoteStream = stream;
-                this.canplay();
+                this.autoPlay();
             };
 
             sessionCallback.didCallEndWithReason = (reason) => {
