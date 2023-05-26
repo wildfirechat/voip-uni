@@ -13,7 +13,6 @@ import Multi from "@/voip/Multi.vue";
 import conferenceApi from "@/api/conferenceApi";
 import Conference from "@/voip/conference/Conference.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
-import appServerApi from "@/api/appServerApi";
 import VConsole from "vconsole";
 import wfc from "@/wfc/client/wfc";
 

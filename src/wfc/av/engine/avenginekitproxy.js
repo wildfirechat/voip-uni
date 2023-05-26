@@ -593,6 +593,5 @@ export class AvEngineKitProxy {
     }
 }
 
-const
-    self = new AvEngineKitProxy();
+const self = new AvEngineKitProxy();
 export default self;

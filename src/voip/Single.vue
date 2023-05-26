@@ -143,7 +143,7 @@ export default {
         }
     },
     methods: {
-        canplay() {
+        autoPlay() {
             console.log('can play');
             if (!this.autoPlayInterval) {
                 this.autoPlayInterval = setInterval(() => {
