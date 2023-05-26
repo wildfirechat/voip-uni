@@ -5,11 +5,11 @@ const {readFileSync} = require("fs");
 module.exports = {
     devServer: {
         https: true,
-        host: '0.0.0.0',
-        port: 443,
-        disableHostCheck: true,
-        key: readFileSync('./cert/10174579_voip.wfim.work.key'),
-        cert: readFileSync('./cert/10174579_voip.wfim.work.pem')
+        // host: '0.0.0.0',
+        // port: 443,
+        // disableHostCheck: true,
+        // key: readFileSync('./cert/test.key'),
+        // cert: readFileSync('./cert/test.pem')
     },
     css: {
         extract: false,
