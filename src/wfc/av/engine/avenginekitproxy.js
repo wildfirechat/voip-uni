@@ -160,7 +160,7 @@ export class AvEngineKitProxy {
         // uni.navigateBack({delta})
         // 这儿可能有问题
         // 比如多人通话，在邀请新参与者的页面，通话被挂断了，页面出栈可能不完全
-        if (!this.debug){
+        if (!this.debug) {
             wx.miniProgram.navigateBack();
         }
     }
@@ -183,12 +183,12 @@ export class AvEngineKitProxy {
     sendConferenceRequestListener = (event, request) => {
         console.log('to send conference request', request)
         wfc.sendConferenceRequestEx(request.sessionId ? request.sessionId : 0, request.roomId ? request.roomId : '', request.request, request.data, request.advance, (errorCode, res) => {
-            console.log('xxx send conference request result', errorCode, request, res)
-            this.emitToVoip('sendConferenceRequestResult', {
+            console.log('send conference request result', errorCode, request, res)
+            window.msgFromUniapp({event: 'sendConferenceRequestResult', args: {
                 error: errorCode,
                 sendConferenceRequestId: request.sendConferenceRequestId,
                 response: res
-            })
+            }})
         });
     }
 
@@ -223,17 +223,17 @@ export class AvEngineKitProxy {
 
             // do nothing
         }, (messageUid, timestamp) => {
-            this.emitToVoip('sendMessageResult', {
+            window.msgFromUniapp({event: 'sendMessageResult', args:{
                 error: 0,
                 sendMessageId: msg.sendMessageId,
                 messageUid: messageUid,
                 timestamp: longValue(numberValue(timestamp) - delta)
-            })
+            }})
             if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
                 this.inviteMessageUid = messageUid;
             }
         }, (errorCode) => {
-            this.emitToVoip('sendMessageResult', {error: errorCode, sendMessageId: msg.sendMessageId})
+            window.msgFromUniapp({event: 'sendMessageResult', args:{error: errorCode, sendMessageId: msg.sendMessageId}})
         });
     }
 
@@ -360,13 +360,30 @@ export class AvEngineKitProxy {
 
     // emit to webview
     emitToVoip(event, args) {
-        window.msgFromUniapp({
-            event,
-            args
-        });
+        if (this.voipWebview) {
+            const
+                _funName = 'msgFromUniapp',
+                _data = {
+                    event,
+                    args
+                };
+            // 这儿的延时目前是必须的，要等音视频页面加载完成，并监听相关事件
+            setTimeout(() => {
+                let baseUrl = this.voipWebview.data.url;
+                if (baseUrl.indexOf('#') > 0) {
+                    baseUrl = baseUrl.substring(0, baseUrl.indexOf('#'));
+                }
+                console.log('data', encodeURIComponent(JSON.stringify(_data, null, '')));
+                this.voipWebview.setData({
+                    url: baseUrl + '#data=' + encodeURIComponent(JSON.stringify(_data, null, ''))
+                })
+            }, 1000)
+        } else if (this.queueEvents) {
+            this.queueEvents.push({event, args});
+        }
     }
 
-    // emit to uniapp
+    // 仅仅是为接口兼容，wx-webview 里面，这个接口其实就是在 webview 里面调用的，调用方和接收方本身都是 webview
     emitToMain(event, args) {
         console.log('emit to main', event, args);
         this.voipWebviewEventListener(event, args)
