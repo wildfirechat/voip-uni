@@ -48,6 +48,14 @@ export default {
         console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress, debug)
         wfc.setupShortLink(imServerAddress, clientId, token)
 
+        let options = urlParams.get('options');
+        options = JSON.parse(decodeURIComponent(options));
+
+        console.log('options', options);
+        this.$nextTick(() => {
+            window.msgFromUniapp(options);
+        })
+
         window.addEventListener("hashchange", this.onHashChange);
         window.addEventListener("popstate", () => {
             console.log('on popstate');
