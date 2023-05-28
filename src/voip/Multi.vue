@@ -143,6 +143,7 @@ export default {
             currentTimestamp: 0,
             videoInputDeviceIndex: 0,
             broadcastMultiCallOngoingTimer: 0,
+			autoPlayInterval: 0,
         }
     },
     methods: {
