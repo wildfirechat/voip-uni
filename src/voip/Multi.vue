@@ -57,7 +57,8 @@
                     </div>
                     <!--add more-->
                     <!--通话建立成功之后，才允许邀请新参与者-->
-                    <div v-if="status === 4/*connect*/ && participantUserInfos.length < 8"
+                    <!--临时屏蔽邀请新参与者-->
+                    <div style="display: none" v-if="status === 4/*connect*/ && participantUserInfos.length < 8"
                          class="participant-container">
                         <img @click="invite" class="avatar" src="@/assets/images/add.png">
                     </div>
@@ -143,7 +144,7 @@ export default {
             currentTimestamp: 0,
             videoInputDeviceIndex: 0,
             broadcastMultiCallOngoingTimer: 0,
-			autoPlayInterval: 0,
+            autoPlayInterval: 0,
         }
     },
     methods: {

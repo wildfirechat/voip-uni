@@ -312,7 +312,10 @@ export class AvEngineKitProxy {
                     }
                     if (!this.voipWebview) {
                         if (this.conversation) {
-                            this.showCallUI(msg.conversation);
+                            this.showCallUI(msg.conversation, false, {
+                                event: 'message',
+                                args: msg,
+                            });
                         } else {
                             console.log('call ended')
                         }
@@ -335,7 +338,10 @@ export class AvEngineKitProxy {
 
                     if (!this.voipWebview && content.participants.indexOf(selfUserInfo.uid) > -1) {
                         if (this.conversation) {
-                            this.showCallUI(msg.conversation);
+                            this.showCallUI(msg.conversation, false, {
+                                event: 'message',
+                                args: msg,
+                            });
                         } else {
                             console.log('call ended')
                         }
