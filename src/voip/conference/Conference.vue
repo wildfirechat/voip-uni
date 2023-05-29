@@ -363,7 +363,7 @@ export default {
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
                 console.log('didParticipantJoined', userId, screenSharing)
-                this.$getUserInfo(userId, (userInfo) => {
+                wfc.getUserInfoEx(userId, true, (userInfo) => {
                     let subscriber = this.session.getSubscriber(userId, screenSharing);
                     userInfo._stream = subscriber.stream;
                     userInfo._isAudience = subscriber.audience;
@@ -451,7 +451,7 @@ export default {
                         }
                     })
                 }
-                if (this.currentLayout === 0) {
+                if (this.currentLayout === 0 || !userInfo) {
                     return;
                 }
 
@@ -724,31 +724,36 @@ export default {
             return str;
         },
 
-        // TODO 删除，可以直接监听用户信息变化了
-        refreshUserInfos() {
-            let toRefreshUsers = [];
-            this.participantUserInfos.forEach(pu => {
-                if (!pu.updateDt) {
-                    toRefreshUsers.push(pu.uid);
+        async refreshUserInfos() {
+            for (let i = 0; i < this.participantUserInfos.length; i++) {
+                let pu = this.participantUserInfos[i];
+                if (pu.updateDt) {
+                    break;
                 }
+                try {
+                    let u = await new Promise((resolve, reject) => {
+                        wfc.getUserInfoEx(pu.uid, true, u => {
+                            resolve(u);
+                        }, err => {
+                            // pu.updateDt = -1;
+                            reject(err);
             });
+                    })
 
-            if (toRefreshUsers.length > 0) {
-                console.log('to refreshUsers', toRefreshUsers)
-                let userInfos = wfc.getUserInfos(toRefreshUsers, '');
-                userInfos.forEach(u => {
-                    let index = this.participantUserInfos.findIndex(p => p.uid === u.uid);
-                    if (u.updateDt && index > -1) {
-                        let ou = this.participantUserInfos[index];
+                    if (u.updateDt) {
+                        let ou = this.participantUserInfos[i];
                         u._stream = ou._stream;
                         u._isAudience = ou._isAudience;
                         u._isHost = ou._isHost;
                         u._isVideoMuted = ou._isVideoMuted;
                         u._isAudioMuted = ou._isAudioMuted;
                         u._volume = ou._volume;
-                        this.participantUserInfos[index] = u;
+                        this.participantUserInfos[i] = u;
                     }
-                })
+                } catch (e) {
+                    let ou = this.participantUserInfos[i];
+                    ou.updateDt = -1;
+                    }
             }
         },
 
@@ -1025,6 +1030,10 @@ export default {
                         width = '25%';
                         height = '25%'
                     }
+                    if (this.$refs.rootContainer) {
+                        this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
+                        this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
+                    }
                 }
             }
         },
@@ -1051,6 +1060,10 @@ export default {
                         // max 16
                         width = '25%';
                         height = '25%'
+                    }
+                    if (this.$refs.rootContainer) {
+                        this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
+                        this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
                 }
             }
