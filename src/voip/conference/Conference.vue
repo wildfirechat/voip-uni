@@ -170,13 +170,13 @@
                                  src='@/assets/images/av_conference_screen_sharing_hover.png'/>
                             <p class="single-line">共享屏幕</p>
                         </div>
-                        <div class="action" @click="chat">
+                        <div class="action" style="display: none" @click="chat">
                             <i class="icon-ion-ios-chatboxes"
                                style="width: 40px; height: 40px; font-size: 40px; color: black"
                                v-bind:style="{color: showConversationView ? 'white' : 'black'}"/>
                             <p>聊天</p>
                         </div>
-                        <div v-if="selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action">
+                        <div v-if="selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action" style="display: none">
                             <img v-if="!conferenceManager.isHandUp" @click="handup"
                                  class="action-img"
                                  src='@/assets/images/av_conference_handup.png'/>
@@ -184,7 +184,7 @@
                                  src='@/assets/images/av_conference_handup_hover.png'/>
                             <p class="single-line">举手</p>
                         </div>
-                        <div class="action">
+                        <div class="action" style="display: none">
                             <img @click.stop="members" class="action-img"
                                  v-bind:style="{filter: showConferenceManageView ? 'invert(100%)' : 'none'}"
                                  src='@/assets/images/av_conference_members.png'/>
@@ -314,7 +314,8 @@ export default {
                 this.session = session;
                 document.title = session.title;
 
-                conferenceManager.getConferenceInfo(session.callId);
+                // TODO
+                // conferenceManager.getConferenceInfo(session.callId);
             };
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
