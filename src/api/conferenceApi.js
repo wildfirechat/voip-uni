@@ -4,6 +4,7 @@ import axios from "axios";
 
 class ConferenceApi {
     authToken;
+    appServer;
 
     constructor() {
     }
@@ -84,7 +85,7 @@ class ConferenceApi {
      */
     async _post(path, data = {}, rawResponse = false, rawResponseData = false) {
         let response;
-        path = Config.APP_SERVER + path;
+        path = this.appServer + path;
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
             headers: {

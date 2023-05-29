@@ -34,10 +34,18 @@ export default {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.type = urlParams.get('type');
+        // app server
+        const appServer = decodeURIComponent(urlParams.get('appServer'));
+        if (appServer) {
+            conferenceApi.appServer = appServer;
+        }
         const authToken = urlParams.get('authToken');
+
+        let imServerAddress = decodeURIComponent(urlParams.get('server'));
+        let userId = urlParams.get('userId');
         let clientId = urlParams.get('clientId');
         let token = urlParams.get('token');
-        let imServerAddress = decodeURIComponent(urlParams.get('server'));
+
         let debug = urlParams.get('debug');
         if (debug === 'true') {
             new VConsole();
@@ -45,8 +53,8 @@ export default {
         }
 
         token = token.replaceAll('.', '+').replaceAll('_', '/').replaceAll('-', '=');
-        console.log('Voip-uni created', this.type, authToken, clientId, token, imServerAddress, debug)
-        wfc.setupShortLink(imServerAddress, clientId, token)
+        console.log('Voip-uni created', this.type, userId, authToken, clientId, token, imServerAddress, debug)
+        wfc.setupShortLink(imServerAddress, userId, clientId, token)
 
         let options = urlParams.get('options');
         options = JSON.parse(decodeURIComponent(options));

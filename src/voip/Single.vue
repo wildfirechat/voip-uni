@@ -332,14 +332,6 @@ export default {
         avenginekit.setup();
         this.setupSessionCallback();
         console.log('single mounted', new Date().getTime());
-
-        // setTimeout(() => {
-        //     this.$getUserInfo("FireRobot", (userInfo) => {
-        //         console.log('getUserInfo', userInfo)
-        //     }, err => {
-        //         console.error('getUserInfo error', err);
-        //     });
-        // }, 2000)
     },
 
     computed: {

@@ -1938,8 +1938,8 @@ export class WfcManager {
         impl.setMyCustomState(customState, customText, successCB, failCB)
     }
 
-    setupShortLink(imServerAddress, clientId, token, platform = 6/* SDK_PLATFORM_WX */){
-        impl.setupShortLink(imServerAddress, clientId, token, platform)
+    setupShortLink(imServerAddress, userId, clientId, token, platform = 6/* SDK_PLATFORM_WX */){
+        impl.setupShortLink(imServerAddress, userId, clientId, token, platform)
     }
 
     _getStore() {

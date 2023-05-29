@@ -27,9 +27,7 @@ class ConferenceManager {
 
     setVueInstance(vueInstance) {
         this.vueInstance = vueInstance;
-        this.vueInstance.$getUserId((userId) => {
-            this.selfUserId = userId;
-        })
+        this.selfUserId = wfc.getUserId();
         avenginekitproxy.listenVoipEvent('message', this.onReceiveMessage);
     }
 

@@ -314,8 +314,7 @@ export default {
                 this.session = session;
                 document.title = session.title;
 
-                // TODO
-                // conferenceManager.getConferenceInfo(session.callId);
+                conferenceManager.getConferenceInfo(session.callId);
             };
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
@@ -738,7 +737,7 @@ export default {
                         }, err => {
                             // pu.updateDt = -1;
                             reject(err);
-            });
+                        });
                     })
 
                     if (u.updateDt) {
@@ -754,7 +753,7 @@ export default {
                 } catch (e) {
                     let ou = this.participantUserInfos[i];
                     ou.updateDt = -1;
-                    }
+                }
             }
         },
 
@@ -1031,10 +1030,6 @@ export default {
                         width = '25%';
                         height = '25%'
                     }
-                    if (this.$refs.rootContainer) {
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
-                    }
                 }
             }
         },
@@ -1061,10 +1056,6 @@ export default {
                         // max 16
                         width = '25%';
                         height = '25%'
-                    }
-                    if (this.$refs.rootContainer) {
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
-                        this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
                 }
             }
