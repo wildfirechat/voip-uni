@@ -294,6 +294,19 @@ export class AvEngineKitProxy {
 
                 let participantUserInfos = [];
                 let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
+
+                if (msg.conversation.type === ConversationType.Group
+                    && (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
+                        || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT
+                    )) {
+                    let memberIds = wfc.getGroupMemberIds(msg.conversation.target);
+                    msg.groupMemberUserInfos = wfc.getUserInfos(memberIds, msg.conversation.target);
+                }
+
+                // patch
+                msg.selfUserInfo = selfUserInfo;
+                msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
+
                 if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
                     this.conversation = msg.conversation;
                     this.callId = content.callId;
@@ -310,12 +323,14 @@ export class AvEngineKitProxy {
                         targetIds.push(msg.from);
                         participantUserInfos = wfc.getUserInfos(targetIds, msg.conversation.target);
                     }
+                    msg.participantUserInfos = participantUserInfos;
                     if (!this.voipWebview) {
                         if (this.conversation) {
                             this.showCallUI(msg.conversation, false, {
                                 event: 'message',
                                 args: msg,
                             });
+                            return;
                         } else {
                             console.log('call ended')
                         }
@@ -336,12 +351,14 @@ export class AvEngineKitProxy {
                     participantIds = participantIds.filter(u => u.uid !== selfUserInfo.uid);
                     participantUserInfos = wfc.getUserInfos(participantIds, msg.conversation.target);
 
+                    msg.participantUserInfos = participantUserInfos;
                     if (!this.voipWebview && content.participants.indexOf(selfUserInfo.uid) > -1) {
                         if (this.conversation) {
                             this.showCallUI(msg.conversation, false, {
                                 event: 'message',
                                 args: msg,
                             });
+                            return;
                         } else {
                             console.log('call ended')
                         }
@@ -351,18 +368,6 @@ export class AvEngineKitProxy {
                         return;
                     }
                 }
-
-                if (msg.conversation.type === ConversationType.Group
-                    && (content.type === MessageContentType.VOIP_CONTENT_TYPE_START
-                        || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT
-                    )) {
-                    let memberIds = wfc.getGroupMemberIds(msg.conversation.target);
-                    msg.groupMemberUserInfos = wfc.getUserInfos(memberIds, msg.conversation.target);
-                }
-
-                msg.participantUserInfos = participantUserInfos;
-                msg.selfUserInfo = selfUserInfo;
-                msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
                 this.emitToVoip("message", msg);
             }
         }
@@ -539,24 +544,24 @@ export class AvEngineKitProxy {
         });
 
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
-        this.showCallUI(null, true);
-        // fixme
-        // TODO 参考 startCall
-        this.emitToVoip('startConference', {
-            audioOnly: audioOnly,
-            callId: callId,
-            pin: pin ? pin : Math.ceil(Math.random() * 1000000) + '',
-            host: host,
-            title: title,
-            desc: desc,
-            audience: audience,
-            advance: advance,
-            record: record,
-            selfUserInfo: selfUserInfo,
-            extra: extra,
-            callExtra: callExtra,
-            muteAudio: muteAudio,
-            muteVideo: muteVideo,
+        this.showCallUI(null, true, {
+            event: 'startConference',
+            args: {
+                audioOnly: audioOnly,
+                callId: callId,
+                pin: pin ? pin : Math.ceil(Math.random() * 1000000) + '',
+                host: host,
+                title: title,
+                desc: desc,
+                audience: audience,
+                advance: advance,
+                record: record,
+                selfUserInfo: selfUserInfo,
+                extra: extra,
+                callExtra: callExtra,
+                muteAudio: muteAudio,
+                muteVideo: muteVideo,
+            }
         });
     }
 
@@ -597,21 +602,23 @@ export class AvEngineKitProxy {
             console.error('join conference chatRoom fail', callId, err);
         });
         let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
-        this.showCallUI(null, true);
-        this.emitToVoip('joinConference', {
-            audioOnly: audioOnly,
-            callId: callId,
-            pin: pin,
-            host: host,
-            title: title,
-            desc: desc,
-            audience: audience,
-            advance: advance,
-            muteAudio: muteAudio,
-            muteVideo: muteVideo,
-            selfUserInfo: selfUserInfo,
-            extra: extra,
-            callExtra: callExtra,
+        this.showCallUI(null, true, {
+            event: 'joinConference',
+            args: {
+                audioOnly: audioOnly,
+                callId: callId,
+                pin: pin,
+                host: host,
+                title: title,
+                desc: desc,
+                audience: audience,
+                advance: advance,
+                muteAudio: muteAudio,
+                muteVideo: muteVideo,
+                selfUserInfo: selfUserInfo,
+                extra: extra,
+                callExtra: callExtra,
+            }
         });
     }
 
