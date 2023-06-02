@@ -293,6 +293,25 @@ export class WfcManager {
     }
 
     /**
+     * 批量获取用户信息
+     * @param {[string]} userIds 用户ids
+     * @param {function ([UserInfo])} successCB 成功回调
+     * @param {function (Number)} failCB 失败回调
+     */
+    getUserInfosEx(userIds,  successCB, failCB) {
+        impl.getUserInfosEx(userIds, userInfos => {
+            userInfos.forEach((u)=>{
+                if(!u.portrait){
+                    u.portrait = Config.DEFAULT_PORTRAIT_URL;
+                }
+            });
+            successCB && successCB(userInfos);
+        }, err => {
+            failCB && failCB(err);
+        });
+    }
+
+    /**
      * 服务端搜索用户
      * @param {string} keyword 搜索关键字
      * @param {number} searchType 搜索类型，可选值参考{@link SearchType}

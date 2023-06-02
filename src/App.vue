@@ -61,7 +61,20 @@ export default {
 
         console.log('options', options);
         this.$nextTick(() => {
-            window.msgFromUniapp(options);
+            if (options.event === 'message' && options.args.participants) {
+                console.log('getUserInfos', options.args.participants)
+                wfc.getUserInfosEx(options.args.participants, userInfos => {
+                    options.args.participantUserInfos = userInfos;
+                    console.log('getUserInfosEx success', userInfos);
+                    window.msgFromUniapp(options);
+                }, err => {
+                    console.log('getUserInfosEx error', err, options.args.participants);
+                    window.msgFromUniapp(options);
+                })
+
+            } else {
+                window.msgFromUniapp(options);
+            }
         })
 
         window.addEventListener("hashchange", this.onHashChange);
