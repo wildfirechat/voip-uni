@@ -143,27 +143,37 @@ export default {
         }
     },
     methods: {
+        // 用来解决 iOS 上，不能自动播放问题
         autoPlay() {
-            console.log('can play');
+            console.log('auto play');
             if (!this.autoPlayInterval) {
                 this.autoPlayInterval = setInterval(() => {
                     try {
-                        if (this.$refs.localVideo && this.$refs.localVideo.paused) {
-                            this.$refs.localVideo.play();
-                            console.log('can play local');
+                        let videos = document.getElementsByTagName('video');
+                        let allPlaying = true;
+                        for (const video of videos) {
+                            if (video.paused) {
+                                allPlaying = false;
+                                break;
+                            }
                         }
-                        if (this.$refs.remoteVideo && this.$refs.remoteVideo.paused) {
-                            this.$refs.remoteVideo.play();
-                            console.log('can play remote');
+                        // participantUserInfos 不包含自己
+                        if (allPlaying && videos.length === this.participantUserInfos.length + 1) {
+                            clearInterval(this.autoPlayInterval);
+                            this.autoPlayInterval = 0;
+                            console.log('auto play, allPlaying', videos.length);
+                            return;
+                        }
+
+                        for (const video of videos) {
+                            if (video.paused) {
+                                video.play();
+                            }
                         }
                     } catch (e) {
                         // do nothing
                     }
 
-                    if (this.$refs.localVideo && !this.$refs.localVideo.paused && this.$refs.remoteVideo && !this.$refs.remoteVideo.paused) {
-                        clearInterval(this.autoPlayInterval);
-                        this.autoPlayInterval = 0;
-                    }
                 }, 100);
             }
         },
