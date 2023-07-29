@@ -36,9 +36,14 @@ export default {
         let options = urlParams.get('options');
         options = JSON.parse(decodeURIComponent(options));
         console.log('voip options', options)
-        new VConsole();
 
-        let audioOnly = options.args.audioOnly || options.args.messageContent.audioOnly;
+        let debug = urlParams.get('debug');
+        if (debug === 'true') {
+            new VConsole();
+            avenginekitproxy.debug = true;
+        }
+
+        let audioOnly = options.args.audioOnly || (options.args.messageContent && options.args.messageContent.audioOnly);
         console.log('audioOnly', audioOnly)
         navigator.mediaDevices.getUserMedia({video: !audioOnly, audio: true})
             .then(() => {
@@ -71,12 +76,6 @@ export default {
             let userId = urlParams.get('userId');
             let clientId = urlParams.get('clientId');
             let token = urlParams.get('token');
-
-            let debug = urlParams.get('debug');
-            if (debug === 'true') {
-                new VConsole();
-                avenginekitproxy.debug = true;
-            }
 
             token = token.replaceAll('.', '+').replaceAll('_', '/').replaceAll('-', '=');
             wfc.setupShortLink(imServerAddress, userId, clientId, token)
