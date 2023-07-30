@@ -37,6 +37,7 @@ export default {
         options = JSON.parse(decodeURIComponent(options));
         console.log('voip options', options)
 
+        new VConsole();
         let debug = urlParams.get('debug');
         if (debug === 'true') {
             new VConsole();
@@ -112,6 +113,7 @@ export default {
                     const prefix = 'data=';
                     let data = this.hash.substring(this.hash.indexOf(prefix) + prefix.length)
                     data = decodeURIComponent(data);
+                    console.log('on popstate data', data);
                     window.msgFromUniapp(JSON.parse(data));
                     // document.getElementsByTagName('body')[0].innerHTML = '解码后参数：' + this.count + ' ' + data;
                 }
