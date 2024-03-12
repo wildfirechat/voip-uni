@@ -5,7 +5,9 @@ const {readFileSync} = require("fs");
 module.exports = {
     devServer: {
         https: true,
-        // host: '0.0.0.0',
+        // 本地调试时，配置需要配置正确的证书
+        // 需要使用域名，及对应的证书，最好用阿里云等申请的免费证书，否则可能会有问题
+        // host: 'voip.wfim.work', // 此域名解析到 192.168.2.180，如果你能把你本地的 ip 固定成这个，那么可以直接使用
         // port: 443,
         // disableHostCheck: true,
         // key: readFileSync('./cert/test.key'),
