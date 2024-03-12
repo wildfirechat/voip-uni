@@ -482,8 +482,8 @@ export default {
 
 .participant-container {
     display: flex;
-    width: 200px;
-    height: 220px;
+    width: 100px;
+    height: 120px;
     /*background-color: rebeccapurple;*/
 
     flex-direction: column;
@@ -541,8 +541,8 @@ footer {
 }
 
 .avatar {
-    width: 200px;
-    height: 200px;
+    width: 80px;
+    height: 80px;
 }
 
 .action-img {

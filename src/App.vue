@@ -47,7 +47,8 @@ export default {
         let audioOnly = options.args.audioOnly || (options.args.messageContent && options.args.messageContent.audioOnly);
         console.log('audioOnly', audioOnly)
         navigator.mediaDevices.getUserMedia({video: !audioOnly, audio: true})
-            .then(() => {
+            .then((stream) => {
+                stream.getTracks().forEach(track => track.stop())
                 this.init(urlParams)
             })
             .catch(reason => {
@@ -85,6 +86,7 @@ export default {
             options = JSON.parse(decodeURIComponent(options));
 
             console.log('options', options);
+            // 等待页面mount，并完成相关监听
             this.$nextTick(() => {
                 if (options.event === 'message' && options.args.participants) {
                     console.log('getUserInfos', options.args.participants)

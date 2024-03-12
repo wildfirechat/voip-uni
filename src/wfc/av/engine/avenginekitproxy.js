@@ -451,6 +451,7 @@ export class AvEngineKitProxy {
     };
 
     /**
+     * never called
      * 发起音视频通话
      * @param {Conversation} conversation 会话
      * @param {Boolean} audioOnly 是否是音频通话
@@ -499,6 +500,7 @@ export class AvEngineKitProxy {
     }
 
     /**
+     * never called
      * 开始会议
      * @param {string} callId 会议id
      * @param {boolean} audioOnly 是否仅仅开启音频; true，音频会议；false，视频会议
@@ -560,6 +562,7 @@ export class AvEngineKitProxy {
     }
 
     /**
+     * never called
      * 加入会议
      * @param {string} callId 会议id
      * @param {string} audioOnly 是否只开启音频
@@ -616,6 +619,7 @@ export class AvEngineKitProxy {
         });
     }
 
+    // never called
     showCallUI(conversation, isConference, options) {
         let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
         wx.navigateTo({

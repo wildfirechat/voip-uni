@@ -439,7 +439,7 @@ export default {
 }
 
 .localVideo {
-    width: 200px;
+    width: 120px;
     height: auto;
     position: absolute;
     top: 0;
