@@ -73,6 +73,7 @@ export default {
                 conferenceApi.appServer = appServer;
             }
             const authToken = urlParams.get('authToken');
+            conferenceApi.authToken = authToken;
 
             let imServerAddress = decodeURIComponent(urlParams.get('server'));
             let userId = urlParams.get('userId');
