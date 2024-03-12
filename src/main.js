@@ -4,6 +4,8 @@ import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import VueContext from "vue-context";
 import '@/assets/fonts/icomoon/style.css'
 import './style.css'
+import VModal from 'vue-js-modal'
+import Alert from "./common/Alert";
 
 Vue.config.productionTip = false
 
@@ -78,6 +80,8 @@ Vue.prototype.$inviteConferenceParticipant = inviteMessageContent => {
 Vue.prototype.$eventBus = new Vue();
 
 Vue.use(VueContext);
+Vue.use(VModal);
+Vue.use(Alert)
 Vue.component("vue-context", VueContext)
 
 new Vue({
