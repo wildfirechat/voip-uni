@@ -406,8 +406,8 @@ export default {
                 this.session = null;
             }
 
-            sessionCallback.onRequestChangeMode = (userId, audience) => {
-                console.log('onRequestChangeMode', userId + ' ' + audience)
+            sessionCallback.onRequestChangeMode = (audience) => {
+                console.log('onRequestChangeMode', audience)
                 if (audience) {
                     this.session.switchAudience(true)
                     return;
@@ -531,14 +531,14 @@ export default {
 
         muteAudio() {
             let enable = this.session.audioMuted ? true : false;
-            if (enable && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
+            if (enable && this.session.audience && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
                 this.requestUnmute(true);
                 return;
             }
-            this._muteAudio(enable);
+            this.enableAudio(enable);
         },
 
-        async _muteAudio(enable) {
+        async enableAudio(enable) {
             let result = await this.session.setAudioEnabled(enable)
             if (!result) {
                 return;
@@ -560,14 +560,14 @@ export default {
         },
         muteVideo() {
             let enable = this.session.videoMuted ? true : false;
-            if (enable && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
+            if (enable && this.session.audience && !conferenceManager.isOwner() && !conferenceManager.conferenceInfo.allowSwitchMode) {
                 this.requestUnmute(false);
                 return;
             }
-            this._muteVideo(enable);
+            this.enableVideo(enable);
         },
 
-        async _muteVideo(enable) {
+        async enableVideo(enable) {
             let result = await this.session.setVideoEnabled(enable)
             if (!result) {
                 return;
@@ -589,14 +589,23 @@ export default {
         },
 
         requestUnmute(audio) {
+            if (audio && conferenceManager.allowUnmuteAudio) {
+                this.enableAudio(true);
+                return;
+            }
+
+            if (!audio && conferenceManager.allowUnmuteVideo) {
+                this.enableVideo(true);
+                return;
+            }
             this.$alert({
-                content: '主持人不允许解除静音，您可以向主持人申请解除静音',
+                content: audio ? '主持人不允许解除静音，您可以向主持人申请解除静音' : '主持人不允许打开摄像头，您可以向主持人申请打开摄像头',
                 confirmText: '申请',
                 cancelCallback: () => {
                     // do nothing
                 },
                 confirmCallback: () => {
-                    conferenceManager.applyUnmute(false);
+                    conferenceManager.applyUnmute(audio, false);
                 }
             })
         },
@@ -1076,13 +1085,13 @@ export default {
         this.$eventBus.$on('muteVideo', (mute) => {
             if (this.session.videoMuted !== mute) {
                 let enable = this.session.videoMuted ? true : false;
-                this._muteVideo(enable);
+                this.enableVideo(enable);
             }
         })
         this.$eventBus.$on('muteAudio', (mute) => {
             if (this.session.audioMuted !== mute) {
                 let enable = this.session.audioMuted ? true : false;
-                this._muteAudio(enable);
+                this.enableAudio(enable);
             }
         })
     },
