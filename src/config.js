@@ -4,4 +4,7 @@ export default class Config {
 
     // turn server 配置，可以添加多个
     static ICE_SERVERS = [['turn:turn.wildfirechat.net:3478', 'wfchat', 'wfchat123']];
+
+    // 单人音视频通话页面是否显示音视频 SDK 相关提示
+    static SHOW_VOIP_TIP = true
 }

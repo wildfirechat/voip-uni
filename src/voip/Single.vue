@@ -8,6 +8,11 @@
 <template>
     <div class="voip-single-container">
         <h1 style="display: none">Voip-single，运行在新的window，和主窗口数据是隔离的！！</h1>
+        <div class="webrtc-tip" v-if="showVoipTip">
+            <p>{{ supportConference ? '当前使用：多人版音视频' : '当前使用：高级版音视频' }}</p>
+            <p>多人版音视频 和 高级版音视频不互通，切换方法请参考: wfc/av/internal/README.MD</p>
+            <p>{{ voipTip }}</p>
+        </div>
         <div v-if="session" class="container">
             <section style="width: 100%; height: 100%">
                 <!--audio-->
@@ -124,6 +129,8 @@ import CallSessionCallback from "@/wfc/av/engine/callSessionCallback";
 import CallState from "@/wfc/av/engine/callState";
 import VideoType from "@/wfc/av/engine/videoType";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
+import Config from "../config";
+import ConferenceInfo from "../wfc/av/model/conferenceInfo";
 
 export default {
     name: 'Single',
@@ -140,6 +147,9 @@ export default {
             remoteStream: null,
             videoInputDeviceIndex: 0,
             autoPlayInterval: 0,
+            showVoipTip: Config.SHOW_VOIP_TIP,
+            voipTip: '',
+            supportConference: avenginekit.startConference !== undefined,
         }
     },
     methods: {
@@ -342,6 +352,18 @@ export default {
         avenginekit.setup();
         this.setupSessionCallback();
         console.log('single mounted', new Date().getTime());
+        if (!this.supportConference) {
+            let host = window.location.host;
+            if (host.indexOf('wildfirechat') === -1 && host.indexOf('localhost') === -1) {
+                for (const ice of Config.ICE_SERVERS) {
+                    if (ice[0].indexOf('turn.wildfirechat.net') >= 0) {
+                        // 显示自行部署 turn 提示
+                        this.voipTip = '当前音视频 SDK 为多人版。多人版\n 上线前，请部署 turn 服务，野火官方 turn 服务只能开发测试使用!!!';
+                        break
+                    }
+                }
+            }
+        }
     },
 
     computed: {
@@ -455,6 +477,14 @@ export default {
 .video {
     width: 100%;
     height: 100%;
+}
+
+.webrtc-tip {
+    position: absolute;
+    color: red;
+    left: 0;
+    top: 0;
+    z-index: 999;
 }
 
 </style>
