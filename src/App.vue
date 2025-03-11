@@ -89,7 +89,7 @@ export default {
             console.log('options', options);
             // 等待页面mount，并完成相关监听
             this.$nextTick(() => {
-                if (options.event === 'message' && options.args.participants) {
+                if (options.args.participants) {
                     console.log('getUserInfos', options.args.participants)
                     wfc.getUserInfosEx(options.args.participants, userInfos => {
                         options.args.participantUserInfos = userInfos;
