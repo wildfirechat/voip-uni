@@ -86,33 +86,6 @@ export class AvEngineKitProxy {
         }
     }
 
-    // called by uniapp
-    getUserInfoListener = (event, args) => {
-        let cb = (requestId, errorCode, userInfo) => {
-            this.emitToVoip('getUserInfoResult', {
-                error: errorCode,
-                requestId: requestId,
-                userInfo: userInfo
-            })
-        }
-        wfc.getUserInfoEx(args.userId, false, (userInfo) => {
-            cb(args.requestId, 0, userInfo)
-        }, err => {
-            cb(args.requestId, err, null);
-        })
-    }
-
-    // called by uniapp
-    getUserIdListener(event, args) {
-        let userId = wfc.getUserId();
-        this.emitToVoip('getUserIdResult', {
-            error: 0,
-            requestId: args.requestId,
-            userId: userId
-        })
-    }
-
-    // call by uniapp
     pickGroupMembers = (event, args) => {
         let {groupId, initialCheckedUsers, uncheckableUsers, requestId} = args;
         let memberIds = wfc.getGroupMemberIds(groupId);
@@ -133,7 +106,6 @@ export class AvEngineKitProxy {
         });
     }
 
-    // called by uniapp
     inviteConferenceParticipant(event, args) {
         console.log('inviteConferenceParticipant', args)
         let inviteMessageContent = Object.assign(new ConferenceInviteMessageContent(), args.inviteMessageContent);
@@ -382,15 +354,9 @@ export class AvEngineKitProxy {
         }
     }
 
-    // 仅仅是为接口兼容，wx-webview 里面，这个接口其实就是在 webview 里面调用的，调用方和接收方本身都是 webview
+    // 由于使用了支持 short-link 的 web sdk，部分请求在 webview 里面直接处理了，没有发送到host
     emitToMain(event, args) {
         console.log('emit to main', event, args);
-        this.voipWebviewEventListener(event, args)
-    }
-
-    // called by uniapp
-    voipWebviewEventListener = (event, args) => {
-        console.log('voipWebviewEventListener', event, args)
         switch (event) {
             case 'voip-message':
                 this.sendVoipListener(event, args);
@@ -400,12 +366,6 @@ export class AvEngineKitProxy {
                 break;
             case 'update-call-start-message':
                 this.updateCallStartMessageContentListener(event, args);
-                break;
-            case 'getUserId':
-                this.getUserIdListener(event, args);
-                break;
-            case 'getUserInfo':
-                this.getUserInfoListener(event, args);
                 break;
             case 'pickGroupMembers':
                 this.pickGroupMembers(event, args);
