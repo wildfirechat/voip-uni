@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import App from "@/App.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
-import VueContext from "vue-context";
+// import VueContext from "vue-context";
 import '@/assets/fonts/icomoon/style.css'
 import './style.css'
-import VModal from 'vue-js-modal'
-import Alert from "./common/Alert";
+// import VModal from 'vue-js-modal'
+// import Alert from "./common/Alert";
 
+console.log('initxxxxxxxxxxxxxxx')
 Vue.config.productionTip = false
 
 let requestId = 0;
@@ -42,10 +43,10 @@ Vue.prototype.$inviteConferenceParticipant = inviteMessageContent => {
 
 Vue.prototype.$eventBus = new Vue();
 
-Vue.use(VueContext);
-Vue.use(VModal);
-Vue.use(Alert)
-Vue.component("vue-context", VueContext)
+// Vue.use(VueContext);
+// Vue.use(VModal);
+// Vue.use(Alert)
+// Vue.component("vue-context", VueContext)
 
 new Vue({
     render: h => h(App),
