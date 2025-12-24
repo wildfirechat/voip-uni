@@ -9,20 +9,20 @@
 
 <script>
 
-// import Single from "@/voip/Single.vue";
-// import Multi from "@/voip/Multi.vue";
-// import conferenceApi from "@/api/conferenceApi";
-// import Conference from "@/voip/conference/Conference.vue";
+import Single from "@/voip/Single.vue";
+import Multi from "@/voip/Multi.vue";
+import conferenceApi from "@/api/conferenceApi";
+import Conference from "@/voip/conference/Conference.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import VConsole from "vconsole";
-// import wfc from "@/wfc/client/wfc";
+import wfc from "@/wfc/client/wfc";
 
 export default {
     name: 'App',
     components: {
-        // Conference,
-        // Multi,
-        // Single
+        Conference,
+        Multi,
+        Single
     },
     data() {
         return {
@@ -35,32 +35,32 @@ export default {
         console.log("voip-uni App mounted.");
         new VConsole();
 
-        // const queryString = window.location.search;
-        // const urlParams = new URLSearchParams(queryString);
-        // let options = urlParams.get('options');
-        // options = JSON.parse(decodeURIComponent(options));
-        // console.log('voip options', options)
-        //
-        // let debug = urlParams.get('debug');
-        // if (debug === 'true') {
-        //     new VConsole();
-        //     avenginekitproxy.debug = true;
-        // }
-        //
-        // let audioOnly = options.args.audioOnly || (options.args.messageContent && options.args.messageContent.audioOnly);
-        // console.log('audioOnly', audioOnly)
-        // navigator.mediaDevices.getUserMedia({video: !audioOnly, audio: true})
-        //     .then((stream) => {
-        //         stream.getTracks().forEach(track => track.stop())
-        //         this.init(urlParams)
-        //     })
-        //     .catch(reason => {
-        //         console.error('需要允许使用摄像头和麦克风，才能进行音视频通话', reason);
-        //         // let debug = urlParams.get('debug');
-        //         // if (debug !== 'true') {
-        //         //     wx.miniProgram.navigateBack();
-        //         // }
-        //     });
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        let options = urlParams.get('options');
+        options = JSON.parse(decodeURIComponent(options));
+        console.log('voip options', options)
+
+        let debug = urlParams.get('debug');
+        if (debug === 'true') {
+            new VConsole();
+            avenginekitproxy.debug = true;
+        }
+
+        let audioOnly = options.args.audioOnly || (options.args.messageContent && options.args.messageContent.audioOnly);
+        console.log('audioOnly', audioOnly)
+        navigator.mediaDevices.getUserMedia({video: !audioOnly, audio: true})
+            .then((stream) => {
+                stream.getTracks().forEach(track => track.stop())
+                this.init(urlParams)
+            })
+            .catch(reason => {
+                console.error('需要允许使用摄像头和麦克风，才能进行音视频通话', reason);
+                // let debug = urlParams.get('debug');
+                // if (debug !== 'true') {
+                //     wx.miniProgram.navigateBack();
+                // }
+            });
     },
 
     methods: {
@@ -113,10 +113,11 @@ export default {
           // 1. 初始化WebChannel，连接到Qt的交互对象
           new QWebChannel(qt.webChannelTransport, (channel) => {
             // 获取Qt注册的对象（名称与Qt端的registerObject一致）
+              console.log('xxxxxxxxxx channel', channel);
             window.qtInterface = channel.objects.qtInterface;
 
             // 2. 监听Qt发送的信号（Qt端的sendToWeb信号）
-            qtInterface.emitToVoip.connect((data) => {
+            qtInterface.sendToWeb.connect((data) => {
               console.log('on emitToVoip data', data);
               window.msgFromUniapp(JSON.parse(data));
             });
