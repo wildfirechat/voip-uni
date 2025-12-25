@@ -1,6 +1,5 @@
 <template>
     <div id="app">
-      <div id="header">hello world</div>
         <Single v-if="type === 'single'"/>
         <Multi v-else-if="type === 'multi'"/>
         <conference v-else-if="type === 'conference'"/>
@@ -33,7 +32,6 @@ export default {
     },
     created() {
         console.log("voip-uni App mounted.");
-        new VConsole();
 
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -56,10 +54,10 @@ export default {
             })
             .catch(reason => {
                 console.error('需要允许使用摄像头和麦克风，才能进行音视频通话', reason);
-                // let debug = urlParams.get('debug');
-                // if (debug !== 'true') {
-                //     wx.miniProgram.navigateBack();
-                // }
+                let debug = urlParams.get('debug');
+                if (debug !== 'true') {
+                    window.close();
+                }
             });
     },
 

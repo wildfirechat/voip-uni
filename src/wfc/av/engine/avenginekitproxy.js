@@ -133,7 +133,8 @@ export class AvEngineKitProxy {
         // 这儿可能有问题
         // 比如多人通话，在邀请新参与者的页面，通话被挂断了，页面出栈可能不完全
         if (!this.debug) {
-            wx.miniProgram.navigateBack();
+            console.log('didCallEndWithReason, to close window', event, reason)
+            window.close();
         }
     }
 
