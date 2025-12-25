@@ -47,18 +47,19 @@ export default {
 
         let audioOnly = options.args.audioOnly || (options.args.messageContent && options.args.messageContent.audioOnly);
         console.log('audioOnly', audioOnly)
-        navigator.mediaDevices.getUserMedia({video: !audioOnly, audio: true})
-            .then((stream) => {
-                stream.getTracks().forEach(track => track.stop())
-                this.init(urlParams)
-            })
-            .catch(reason => {
-                console.error('需要允许使用摄像头和麦克风，才能进行音视频通话', reason);
-                let debug = urlParams.get('debug');
-                if (debug !== 'true') {
-                    window.close();
-                }
-            });
+        this.init(urlParams)
+        // navigator.mediaDevices.getUserMedia({video: !audioOnly, audio: true})
+        //     .then((stream) => {
+        //         stream.getTracks().forEach(track => track.stop())
+        //         this.init(urlParams)
+        //     })
+        //     .catch(reason => {
+        //         console.error('需要允许使用摄像头和麦克风，才能进行音视频通话', reason);
+        //         let debug = urlParams.get('debug');
+        //         if (debug !== 'true') {
+        //             window.close();
+        //         }
+        //     });
     },
 
     methods: {
