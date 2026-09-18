@@ -6,5 +6,5 @@ export default class Config {
     static ICE_SERVERS = [['turn:turn.wildfirechat.net:3478', 'wfchat', 'wfchatpwd']];
 
     // 单人音视频通话页面是否显示音视频 SDK 相关提示
-    static SHOW_VOIP_TIP = true
+    static SHOW_VOIP_TIP = false; 
 }

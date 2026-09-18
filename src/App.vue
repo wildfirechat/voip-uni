@@ -15,6 +15,7 @@ import Conference from "@/voip/conference/Conference.vue";
 import avenginekitproxy from "@/wfc/av/engine/avenginekitproxy";
 import VConsole from "vconsole";
 import wfc from "@/wfc/client/wfc";
+import Config from "./config";
 
 export default {
     name: 'App',
@@ -42,6 +43,7 @@ export default {
         if (debug === 'true') {
             new VConsole();
             avenginekitproxy.debug = true;
+            Config.SHOW_VOIP_TIP = true;
         }
 
         let audioOnly = options.args.audioOnly || (options.args.messageContent && options.args.messageContent.audioOnly);
